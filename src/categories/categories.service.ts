@@ -4,6 +4,7 @@ import { Category } from 'src/schemas/categories.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ListCreateCategoryDto } from './dto/list-create-category.dto';
+import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -31,8 +32,16 @@ export class CategoriesService {
     }
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll() {
+    try {
+      const listCategories = await this.categoryModal.find();
+      return {
+        status: HttpStatus.OK,
+        data: listCategories,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   findOne(id: number) {
@@ -43,7 +52,17 @@ export class CategoriesService {
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(listDeleteCategoryDto: ListDeleteCategoryDto) {
+    try {
+      await this.categoryModal.deleteMany({
+        _id: { $in: listDeleteCategoryDto.listIdDelete },
+      });
+      return {
+        status: HttpStatus.OK,
+        message: 'Delete categories successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

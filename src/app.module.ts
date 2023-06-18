@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CategoriesModule } from './categories/categories.module';
+import { PaintsModule } from './paints/paints.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CategoriesModule } from './categories/categories.module';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     CategoriesModule,
+    PaintsModule,
   ],
   controllers: [],
   providers: [JwtService],

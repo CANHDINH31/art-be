@@ -10,6 +10,7 @@ import {
 import { CategoriesService } from './categories.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ListCreateCategoryDto } from './dto/list-create-category.dto';
+import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -38,8 +39,8 @@ export class CategoriesController {
     return this.categoriesService.update(+id, updateCategoryDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(+id);
+  @Delete()
+  remove(@Body() listDeleteCategoryDto: ListDeleteCategoryDto) {
+    return this.categoriesService.remove(listDeleteCategoryDto);
   }
 }
