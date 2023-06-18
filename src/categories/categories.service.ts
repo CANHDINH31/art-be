@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from 'src/schemas/categories.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { ListCreateCategoryDto } from './dto/list-create-category.dto';
 import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
+import { ListUpdateCategoryDto } from './dto/list-update-category.dto';
+import mongoose, { Model } from 'mongoose';
+import { ListToggleCategoryDto } from './dto/list-toggle-category.dto copy';
 
 @Injectable()
 export class CategoriesService {
@@ -34,7 +35,9 @@ export class CategoriesService {
 
   async findAll() {
     try {
-      const listCategories = await this.categoryModal.find();
+      const listCategories = await this.categoryModal
+        .find()
+        .populate('list_paint_id');
       return {
         status: HttpStatus.OK,
         data: listCategories,
@@ -48,8 +51,92 @@ export class CategoriesService {
     return `This action returns a #${id} category`;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(listUpdateCategoryDto: ListUpdateCategoryDto) {
+    try {
+      await Promise.all(
+        listUpdateCategoryDto.listCategories?.map(async (category) => {
+          try {
+            const { _id, ...newCategory } = category;
+            await this.categoryModal.findByIdAndUpdate(_id, newCategory);
+          } catch (error) {
+            throw error;
+          }
+        }),
+      );
+
+      return {
+        status: HttpStatus.CREATED,
+        messgae: 'update categories successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addToCategory(listUpdateCategoryDto: ListToggleCategoryDto) {
+    try {
+      await Promise.all(
+        listUpdateCategoryDto.listCategories?.map(async (category) => {
+          try {
+            const foundCategory = await this.categoryModal.findById(
+              category._id,
+            );
+
+            category?.list_paint_id?.forEach((id) => {
+              if (!foundCategory.list_paint_id.includes(id)) {
+                foundCategory.list_paint_id.push(id);
+              }
+            });
+
+            await this.categoryModal.findByIdAndUpdate(
+              category._id,
+              foundCategory,
+            );
+          } catch (error) {
+            throw error;
+          }
+        }),
+      );
+
+      return {
+        status: HttpStatus.CREATED,
+        messgae: 'add to categories successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeToCategory(listUpdateCategoryDto: ListToggleCategoryDto) {
+    try {
+      await Promise.all(
+        listUpdateCategoryDto.listCategories?.map(async (category) => {
+          try {
+            const foundCategory = await this.categoryModal.findById(
+              category._id,
+            );
+
+            foundCategory.list_paint_id = foundCategory?.list_paint_id?.filter(
+              (id) => !category.list_paint_id.includes(id.toString()),
+            );
+
+            await this.categoryModal.findByIdAndUpdate(
+              category._id,
+              foundCategory,
+            );
+          } catch (error) {
+            throw error;
+          }
+        }),
+      );
+
+      return {
+        status: HttpStatus.CREATED,
+        messgae: 'remove to categories successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async remove(listDeleteCategoryDto: ListDeleteCategoryDto) {

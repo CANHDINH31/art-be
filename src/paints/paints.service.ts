@@ -31,8 +31,31 @@ export class PaintsService {
     }
   }
 
-  findAll() {
-    return `This action returns all paints`;
+  async list(page = 1, pageSize = 10) {
+    try {
+      const skip = Number(pageSize) * (page - 1);
+      const take = Number(pageSize);
+
+      const data = await this.paintModal
+        .find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(take);
+
+      const totalItems = await this.paintModal.find({}).count();
+
+      const totalPage = Math.ceil(totalItems / Number(pageSize));
+
+      return {
+        currentPage: Number(page),
+        totalPage,
+        itemsPerPage: Number(pageSize),
+        totalItems,
+        data,
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 
   findOne(id: number) {

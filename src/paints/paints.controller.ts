@@ -6,9 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { PaintsService } from './paints.service';
-import { UpdatePaintDto } from './dto/update-paint.dto';
 import { ListCreatePaintDto } from './dto/list-create-paint.dto';
 import { ListDeletePaintDto } from './dto/list-delete-paint.dto';
 import { ListUpdatePaintDto } from './dto/list-update-paint.dto';
@@ -23,8 +23,9 @@ export class PaintsController {
   }
 
   @Get()
-  findAll() {
-    return this.paintsService.findAll();
+  index(@Req() req) {
+    const { pageSize, page } = req.query;
+    return this.paintsService.list(page, pageSize);
   }
 
   @Get(':id')
