@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ListCreateCategoryDto } from './dto/list-create-category.dto';
 import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
 import { ListUpdateCategoryDto } from './dto/list-update-category.dto';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { ListToggleCategoryDto } from './dto/list-toggle-category.dto copy';
 
 @Injectable()
@@ -37,6 +37,7 @@ export class CategoriesService {
     try {
       const listCategories = await this.categoryModal
         .find()
+        .sort({ createdAt: -1 })
         .populate('list_paint_id');
       return {
         status: HttpStatus.OK,
@@ -47,8 +48,16 @@ export class CategoriesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    try {
+      const data = await this.categoryModal
+        .findById(id)
+        .populate('list_paint_id');
+
+      return { status: HttpStatus.OK, data };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async update(listUpdateCategoryDto: ListUpdateCategoryDto) {
