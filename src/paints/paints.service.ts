@@ -1,5 +1,4 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { UpdatePaintDto } from './dto/update-paint.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Paint } from './entities/paint.entity';
 import { Model } from 'mongoose';

@@ -38,7 +38,7 @@ export class PaintsController {
     return this.paintsService.update(listUpdatePaintDto);
   }
 
-  @Delete()
+  @Post('delete')
   remove(@Body() listDeletePaintDto: ListDeletePaintDto) {
     return this.paintsService.remove(listDeletePaintDto);
   }
