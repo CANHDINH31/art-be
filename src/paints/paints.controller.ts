@@ -15,13 +15,13 @@ export class PaintsController {
 
   @Get()
   index(@Req() req) {
-    const { pageSize, page, title } = req.query;
-    return this.paintsService.list(page, pageSize, title);
+    const { pageSize, page, title, limit } = req.query;
+    return this.paintsService.list(page, pageSize, title, limit);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.paintsService.findOne(+id);
+    return this.paintsService.findOne(id);
   }
 
   @Patch()

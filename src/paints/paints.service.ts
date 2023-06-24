@@ -30,10 +30,10 @@ export class PaintsService {
     }
   }
 
-  async list(page = 1, pageSize = 10, title: string) {
+  async list(page = 1, pageSize = 10, title = '', limit: number) {
     try {
       const skip = Number(pageSize) * (page - 1);
-      const take = Number(pageSize);
+      const take = Number(limit) || Number(pageSize);
 
       const data = await this.paintModal
         .find({ title: { $regex: title, $options: 'i' } })
@@ -50,7 +50,7 @@ export class PaintsService {
       return {
         currentPage: Number(page),
         totalPage,
-        itemsPerPage: Number(pageSize),
+        itemsPerPage: Number(take),
         totalItems,
         data,
       };
@@ -59,8 +59,14 @@ export class PaintsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} paint`;
+  async findOne(id: string) {
+    try {
+      const data = await this.paintModal.findById(id);
+
+      return { status: HttpStatus.OK, data };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async update(listUpdatePaintDto: ListUpdatePaintDto) {
