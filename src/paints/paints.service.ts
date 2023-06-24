@@ -30,18 +30,20 @@ export class PaintsService {
     }
   }
 
-  async list(page = 1, pageSize = 10) {
+  async list(page = 1, pageSize = 10, title: string) {
     try {
       const skip = Number(pageSize) * (page - 1);
       const take = Number(pageSize);
 
       const data = await this.paintModal
-        .find({})
+        .find({ title: { $regex: title, $options: 'i' } })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(take);
 
-      const totalItems = await this.paintModal.find({}).count();
+      const totalItems = await this.paintModal
+        .find({ title: { $regex: title, $options: 'i' } })
+        .count();
 
       const totalPage = Math.ceil(totalItems / Number(pageSize));
 

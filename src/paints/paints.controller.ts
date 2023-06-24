@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Req } from '@nestjs/common';
 import { PaintsService } from './paints.service';
 import { ListCreatePaintDto } from './dto/list-create-paint.dto';
 import { ListDeletePaintDto } from './dto/list-delete-paint.dto';
@@ -24,8 +15,8 @@ export class PaintsController {
 
   @Get()
   index(@Req() req) {
-    const { pageSize, page } = req.query;
-    return this.paintsService.list(page, pageSize);
+    const { pageSize, page, title } = req.query;
+    return this.paintsService.list(page, pageSize, title);
   }
 
   @Get(':id')

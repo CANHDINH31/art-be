@@ -8,7 +8,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ListCreateCategoryDto } from './dto/list-create-category.dto';
 import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
 import { ListUpdateCategoryDto } from './dto/list-update-category.dto';
