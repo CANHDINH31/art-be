@@ -36,7 +36,9 @@ export class PaintsService {
       const take = Number(limit) || Number(pageSize);
 
       const data = await this.paintModal
-        .find({ title: { $regex: title, $options: 'i' } })
+        .find({
+          title: { $regex: title, $options: 'i' },
+        })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(take);
