@@ -5,6 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CategoriesModule } from './categories/categories.module';
 import { PaintsModule } from './paints/paints.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { PaintsModule } from './paints/paints.module';
     ConfigModule.forRoot({ isGlobal: true }),
     CategoriesModule,
     PaintsModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [JwtService],
