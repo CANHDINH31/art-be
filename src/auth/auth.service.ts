@@ -13,6 +13,16 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
+  async me(id: string) {
+    try {
+      const user = await this.userService.find({ id });
+      const { password, ...data } = user.toObject();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async register(registerDto: RegisterDto) {
     try {
       const existUser = await this.userService.find({
@@ -38,22 +48,25 @@ export class AuthService {
     try {
       const user = await this.userService.find({ email: signInDto.email });
       if (!user) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException({ message: 'Email không tồn tại' });
       }
       const isMatch = await bcrypt.compare(signInDto.password, user.password);
       if (!isMatch) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException({
+          message: 'Mật khẩu không chính xác',
+        });
       }
-      const { password, ...data } = user;
-      const access_token = await this.jwtService.signAsync(data, {
+
+      const { password, ...data } = user.toObject();
+      const accessToken = await this.jwtService.signAsync(data, {
         secret: this.configService.get('JWT_SECRET'),
         expiresIn: this.configService.get('EXPIRESIN_TOKEN'),
       });
-      const refresh_token = await this.jwtService.signAsync(data, {
+      const refreshToken = await this.jwtService.signAsync(data, {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
         expiresIn: this.configService.get('EXPIRESIN_REFRESH'),
       });
-      return { access_token, refresh_token };
+      return { accessToken, refreshToken };
     } catch (error) {
       throw error;
     }

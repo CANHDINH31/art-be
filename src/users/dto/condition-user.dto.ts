@@ -5,4 +5,6 @@ export class ConditionUserDto {
   email?: string;
   @IsString()
   password?: string;
+  @IsString()
+  id?: string;
 }
