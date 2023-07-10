@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
   async me(id: string) {
     try {
-      const user = await this.userService.find({ id });
+      const user = await this.userService.find({ _id: id });
       const { password, ...data } = user.toObject();
       return data;
     } catch (error) {
@@ -66,7 +66,7 @@ export class AuthService {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
         expiresIn: this.configService.get('EXPIRESIN_REFRESH'),
       });
-      return { accessToken, refreshToken };
+      return { accessToken, refreshToken, user: data };
     } catch (error) {
       throw error;
     }

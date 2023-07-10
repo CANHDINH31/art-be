@@ -9,7 +9,7 @@ export class AuthController {
 
   @Get('me')
   me(@Req() req) {
-    return this.authService.me(req.user.id);
+    return this.authService.me(req.user._id);
   }
 
   @Post('register')

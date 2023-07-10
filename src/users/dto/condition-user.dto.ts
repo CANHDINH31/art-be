@@ -6,5 +6,5 @@ export class ConditionUserDto {
   @IsString()
   password?: string;
   @IsString()
-  id?: string;
+  _id?: string;
 }
