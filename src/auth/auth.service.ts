@@ -34,7 +34,7 @@ export class AuthService {
     try {
       const existUser = await this.userService.find({
         email: registerDto.email,
-        provider: '',
+        provider: 'WEB',
       });
       if (!existUser) {
         const password = await bcrypt.hash(registerDto.password, 10);
@@ -57,7 +57,7 @@ export class AuthService {
     try {
       const user = await this.userService.find({
         email: signInDto.email,
-        provider: '',
+        provider: 'WEB',
       });
       if (!user) {
         throw new UnauthorizedException({ message: 'Email không tồn tại' });

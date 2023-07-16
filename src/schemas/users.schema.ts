@@ -17,7 +17,7 @@ export class User {
   @Prop()
   image: string;
 
-  @Prop()
+  @Prop({ default: 'WEB' })
   provider: string;
 
   @Prop({ default: false })
