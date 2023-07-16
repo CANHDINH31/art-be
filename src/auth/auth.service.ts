@@ -1,10 +1,16 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dto/sign-in.dto copy';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +18,7 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
   async me(id: string) {
     try {
@@ -27,6 +34,7 @@ export class AuthService {
     try {
       const existUser = await this.userService.find({
         email: registerDto.email,
+        provider: '',
       });
       if (!existUser) {
         const password = await bcrypt.hash(registerDto.password, 10);
@@ -44,9 +52,13 @@ export class AuthService {
       throw error;
     }
   }
+
   async signIn(signInDto: SignInDto) {
     try {
-      const user = await this.userService.find({ email: signInDto.email });
+      const user = await this.userService.find({
+        email: signInDto.email,
+        provider: '',
+      });
       if (!user) {
         throw new UnauthorizedException({ message: 'Email không tồn tại' });
       }
@@ -117,5 +129,78 @@ export class AuthService {
     );
 
     return { access_token: accessTokenNew, refresh_token: refreshTokenNew };
+  }
+
+  async verifyToken(token: string, method: string) {
+    try {
+      const url =
+        method === 'GOOGLE'
+          ? this.configService.get('GOOGLE_VERIFY_TOKEN') + token
+          : this.configService.get('FACEBOOK_VERIFY_TOKEN') + token;
+      const res = await this.httpService.axiosRef.get(url);
+      if (res.data) {
+        const user = await this.userService.find({
+          email: res.data.email,
+          provider: method,
+        });
+        if (user) {
+          const payload = {
+            _id: user._id.toString(),
+            name: res.data.name,
+            image: res.data.picture,
+          };
+          const updatedUser = await this.userService.update(payload);
+          const accessToken = await this.jwtService.signAsync(
+            updatedUser.toObject(),
+            {
+              secret: this.configService.get('JWT_SECRET'),
+              expiresIn: this.configService.get('EXPIRESIN_TOKEN'),
+            },
+          );
+          const refreshToken = await this.jwtService.signAsync(
+            updatedUser.toObject(),
+            {
+              secret: this.configService.get('JWT_REFRESH_SECRET'),
+              expiresIn: this.configService.get('EXPIRESIN_REFRESH'),
+            },
+          );
+
+          return {
+            accessToken,
+            refreshToken,
+            user: updatedUser,
+          };
+        }
+        if (!user) {
+          const createdUser = await this.userService.create({
+            email: res.data.email,
+            name: res.data.name,
+            provider: method,
+            image: res.data?.picture,
+          });
+          const accessToken = await this.jwtService.signAsync(
+            createdUser.toObject(),
+            {
+              secret: this.configService.get('JWT_SECRET'),
+              expiresIn: this.configService.get('EXPIRESIN_TOKEN'),
+            },
+          );
+          const refreshToken = await this.jwtService.signAsync(
+            createdUser.toObject(),
+            {
+              secret: this.configService.get('JWT_REFRESH_SECRET'),
+              expiresIn: this.configService.get('EXPIRESIN_REFRESH'),
+            },
+          );
+          return {
+            accessToken,
+            refreshToken,
+            user: createdUser,
+          };
+        }
+      }
+    } catch (error) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+    }
   }
 }

@@ -22,6 +22,11 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
+  @Post('google')
+  async loginGoogle(@Body() { token }: { token: string }) {
+    return await this.authService.verifyToken(token, 'GOOGLE');
+  }
+
   @Post('refresh')
   async refresh(@Body() body) {
     const { refreshToken } = body;

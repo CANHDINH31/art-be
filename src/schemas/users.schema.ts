@@ -15,6 +15,12 @@ export class User {
   password: string;
 
   @Prop()
+  image: string;
+
+  @Prop()
+  provider: string;
+
+  @Prop({ default: false })
   isAdmin: boolean;
 }
 

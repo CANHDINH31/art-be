@@ -7,4 +7,6 @@ export class ConditionUserDto {
   password?: string;
   @IsString()
   _id?: string;
+  @IsString()
+  provider?: string;
 }
