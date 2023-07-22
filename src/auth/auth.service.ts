@@ -147,7 +147,7 @@ export class AuthService {
           const payload = {
             _id: user._id.toString(),
             name: res.data.name,
-            image: res.data.picture,
+            image: res.data?.picture?.data?.url || res.data.picture,
           };
           const updatedUser = await this.userService.update(payload);
           const accessToken = await this.jwtService.signAsync(
@@ -176,8 +176,9 @@ export class AuthService {
             email: res.data.email,
             name: res.data.name,
             provider: method,
-            image: res.data?.picture,
+            image: res.data?.picture?.data?.url || res.data?.picture,
           });
+
           const accessToken = await this.jwtService.signAsync(
             createdUser.toObject(),
             {
@@ -200,6 +201,7 @@ export class AuthService {
         }
       }
     } catch (error) {
+      console.log(error);
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
   }

@@ -27,6 +27,11 @@ export class AuthController {
     return await this.authService.verifyToken(token, 'GOOGLE');
   }
 
+  @Post('facebook')
+  async loginFacebook(@Body() { token }: { token: string }) {
+    return await this.authService.verifyToken(token, 'FACEBOOk');
+  }
+
   @Post('refresh')
   async refresh(@Body() body) {
     const { refreshToken } = body;
