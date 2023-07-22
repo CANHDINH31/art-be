@@ -92,6 +92,15 @@ export class PaintsService {
     }
   }
 
+  async views(id: string) {
+    try {
+      await this.paintModal.findByIdAndUpdate(id, { $inc: { views: 1 } });
+      return 'add views successfully';
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async remove(listDeletePaintDto: ListDeletePaintDto) {
     try {
       await this.paintModal.deleteMany({

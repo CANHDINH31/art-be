@@ -11,7 +11,7 @@ export class Paint {
   @Prop()
   title: string;
 
-  @Prop()
+  @Prop({ default: 0 })
   views: number;
 }
 
