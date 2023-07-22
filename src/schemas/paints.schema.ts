@@ -10,6 +10,9 @@ export class Paint {
 
   @Prop()
   title: string;
+
+  @Prop()
+  views: number;
 }
 
 export const PaintSchema = SchemaFactory.createForClass(Paint);
