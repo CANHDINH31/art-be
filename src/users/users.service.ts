@@ -5,6 +5,7 @@ import { User } from 'src/schemas/users.schema';
 import { Model } from 'mongoose';
 import { ConditionUserDto } from './dto/condition-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +33,19 @@ export class UsersService {
         new: true,
       });
       return updateUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async changePassword(payload: { password: string }, _id: string) {
+    try {
+      const password = await bcrypt.hash(payload.password, 10);
+      await this.update({ _id, password });
+      return {
+        status: HttpStatus.OK,
+        message: 'Cập nhật mật khẩu thành công',
+      };
     } catch (error) {
       throw error;
     }

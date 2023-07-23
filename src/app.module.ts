@@ -35,7 +35,7 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
           },
         },
         defaults: {
-          from: `"No Reply" <${configService.get('MAIL_FROM')}>`,
+          from: `"Tranh tường miền Bắc" <${configService.get('MAIL_FROM')}>`,
         },
       }),
     }),
@@ -53,6 +53,9 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes({ path: 'auth/me', method: RequestMethod.GET });
+      .forRoutes(
+        { path: 'auth/me', method: RequestMethod.GET },
+        { path: 'users/change-password', method: RequestMethod.POST },
+      );
   }
 }
