@@ -32,6 +32,16 @@ export class AuthController {
     return await this.authService.verifyToken(token, 'FACEBOOk');
   }
 
+  @Post('forgot-password')
+  async forgotPassword(@Body() { email }: { email: string }) {
+    return await this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() payload: { password: string; token: string }) {
+    return await this.authService.resetPassword(payload);
+  }
+
   @Post('refresh')
   async refresh(@Body() body) {
     const { refreshToken } = body;

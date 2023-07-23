@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -81,6 +82,42 @@ export class AuthService {
       return { accessToken, refreshToken, user: data };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async forgotPassword(email: string) {
+    try {
+      const user = await this.userService.find({ email, provider: 'WEB' });
+      if (!user)
+        throw new BadRequestException({
+          message: 'Email không tồn tại',
+        });
+
+      const { password, ...data } = user.toObject();
+      const token = await this.jwtService.signAsync(data, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: '5m',
+      });
+      return token;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async resetPassword(payload: { token: string; password: string }) {
+    try {
+      const decode = await this.jwtService.verify(payload.token, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+
+      const password = await bcrypt.hash(payload.password, 10);
+      await this.userService.update({ _id: decode._id, password });
+      return {
+        status: HttpStatus.OK,
+        message: 'Cập nhật mật khẩu thành công',
+      };
+    } catch (error) {
+      throw new BadRequestException('Hết thời gian thay đổi mật khẩu');
     }
   }
 
