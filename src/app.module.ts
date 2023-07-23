@@ -13,6 +13,7 @@ import { PaintsModule } from './paints/paints.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 
 @Module({
   imports: [
@@ -20,6 +21,22 @@ import { AuthMiddleware } from './auth/middleware/auth.middleware';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get('MONGODB_DATABASE_URL'),
+      }),
+    }),
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('MAIL_HOST'),
+          secure: false,
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${configService.get('MAIL_FROM')}>`,
+        },
       }),
     }),
     ScheduleModule.forRoot(),

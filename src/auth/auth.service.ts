@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dto/sign-in.dto copy';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
+import { MailerService } from '@nest-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly httpService: HttpService,
+    private mailerService: MailerService,
   ) {}
   async me(id: string) {
     try {
@@ -94,11 +96,24 @@ export class AuthService {
         });
 
       const { password, ...data } = user.toObject();
+
       const token = await this.jwtService.signAsync(data, {
         secret: this.configService.get('JWT_SECRET'),
         expiresIn: '5m',
       });
-      return token;
+
+      await this.mailerService.sendMail({
+        to: data.email,
+        subject: 'Thay đổi mật khẩu',
+        text: `${this.configService.get(
+          'DOMAIN_WEB',
+        )}/auth/reset-password?token=${token}`,
+      });
+
+      return {
+        status: HttpStatus.OK,
+        data: { email: data.email },
+      };
     } catch (error) {
       throw error;
     }
