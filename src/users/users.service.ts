@@ -12,7 +12,9 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModal: Model<User>) {}
   async find(conditionUserDto: ConditionUserDto) {
     try {
-      const user = await this.userModal.findOne({ ...conditionUserDto });
+      const user = await this.userModal
+        .findOne({ ...conditionUserDto })
+        .populate('favourite');
       return user;
     } catch (error) {
       throw error;
@@ -29,9 +31,11 @@ export class UsersService {
   async update(updateUserDto: UpdateUserDto) {
     try {
       const { _id, ...data } = updateUserDto;
-      const updateUser = await this.userModal.findByIdAndUpdate(_id, data, {
-        new: true,
-      });
+      const updateUser = await this.userModal
+        .findByIdAndUpdate(_id, data, {
+          new: true,
+        })
+        .populate('favourite');
       return updateUser;
     } catch (error) {
       throw error;
@@ -49,5 +53,28 @@ export class UsersService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async favourite(id: string, userId: string) {
+    try {
+      const user = await this.userModal.findOne({ _id: userId });
+
+      if (user && user.favourite) {
+        const index = user.favourite.indexOf(id);
+        if (index !== -1) {
+          user.favourite.splice(index, 1);
+        } else {
+          user.favourite.push(id);
+        }
+      } else {
+        user.favourite = [id];
+      }
+
+      await user.save();
+      return {
+        status: HttpStatus.OK,
+        data: user,
+      };
+    } catch (error) {}
   }
 }

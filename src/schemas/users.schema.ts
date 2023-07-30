@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -22,6 +22,9 @@ export class User {
 
   @Prop({ default: false })
   isAdmin: boolean;
+
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Paint' })
+  favourite: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
