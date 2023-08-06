@@ -17,16 +17,14 @@ export class RateService {
         user_id: userId,
       });
       if (existedRate) {
-        await this.update({
+        return await this.update({
           ...syncRateDto,
           user_id: userId,
           _id: existedRate._id.toString(),
         });
       } else {
-        await this.create({ ...syncRateDto, user_id: userId });
+        return await this.create({ ...syncRateDto, user_id: userId });
       }
-
-      return 'Rate creation successful';
     } catch (error) {
       throw error;
     }
