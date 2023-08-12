@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { RateModule } from './rate/rate.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { RateModule } from './rate/rate.module';
     AuthModule,
     UsersModule,
     RateModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [JwtService],
@@ -58,6 +60,9 @@ export class AppModule implements NestModule {
       .forRoutes(
         { path: 'rate', method: RequestMethod.POST },
         { path: 'rate/find-one-by-id/(*)', method: RequestMethod.GET },
+        { path: 'comments', method: RequestMethod.POST },
+        { path: 'comments/(*)', method: RequestMethod.PUT },
+        { path: 'comments/(*)', method: RequestMethod.DELETE },
         { path: 'users/favourite/(*)', method: RequestMethod.GET },
         { path: 'auth/me', method: RequestMethod.GET },
         { path: 'users/change-password', method: RequestMethod.POST },
