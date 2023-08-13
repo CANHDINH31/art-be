@@ -32,6 +32,11 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
+  @Get('/find-by-painting-id/:id')
+  findByPaintingId(@Param('id') id: string) {
+    return this.categoriesService.findByPaintingId(id);
+  }
+
   @Patch('add-to-category')
   addToCategory(@Body() listUpdateCategoryDto: ListToggleCategoryDto) {
     return this.categoriesService.addToCategory(listUpdateCategoryDto);

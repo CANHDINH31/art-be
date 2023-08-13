@@ -60,6 +60,30 @@ export class CategoriesService {
     }
   }
 
+  async findByPaintingId(id: string) {
+    try {
+      const data = await this.categoryModal
+        .find({ list_paint_id: { $in: [id] } })
+        .populate('list_paint_id')
+        .select('title list_paint_id');
+
+      const arrTitle = [],
+        arrPaint = [];
+
+      data?.map((item) => {
+        arrTitle.push(item.title);
+        arrPaint.push(...item.list_paint_id);
+      });
+
+      return {
+        status: HttpStatus.OK,
+        data: { title: arrTitle, listPaint: arrPaint },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async update(listUpdateCategoryDto: ListUpdateCategoryDto) {
     try {
       await Promise.all(
