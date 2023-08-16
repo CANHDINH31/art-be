@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type PaintDocument = HydratedDocument<Paint>;
 
@@ -10,6 +10,12 @@ export class Paint {
 
   @Prop()
   title: string;
+
+  @Prop({ default: 0 })
+  total_score: number;
+
+  @Prop({ default: 0 })
+  account_users_rate: number;
 
   @Prop({ default: 0 })
   views: number;

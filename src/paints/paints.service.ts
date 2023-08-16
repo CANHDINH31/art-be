@@ -76,8 +76,14 @@ export class PaintsService {
       await Promise.all(
         listUpdatePaintDto.listPaints?.map(async (paint) => {
           try {
-            const { _id, ...newPaint } = paint;
-            await this.paintModal.findByIdAndUpdate(_id, newPaint);
+            const { _id, total_score, account_users_rate, ...newPaint } = paint;
+            await this.paintModal.findByIdAndUpdate(_id, {
+              $inc: {
+                total_score: total_score,
+                account_users_rate: account_users_rate,
+              },
+              ...newPaint,
+            });
           } catch (error) {
             throw error;
           }

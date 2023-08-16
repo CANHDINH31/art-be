@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Req, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Get,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RateService } from './rate.service';
 import { SyncRateDto } from './dto/sync-rate.dto';
 
@@ -19,5 +27,10 @@ export class RateController {
   @Get('/find-many-by-id/:id')
   findMany(@Param('id') id: string) {
     return this.rateService.findMany(id);
+  }
+
+  @Delete('/:id')
+  delete(@Param('id') id: string) {
+    return this.rateService.delete(id);
   }
 }

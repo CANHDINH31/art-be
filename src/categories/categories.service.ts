@@ -50,9 +50,10 @@ export class CategoriesService {
 
   async findOne(id: string) {
     try {
-      const data = await this.categoryModal
-        .findById(id)
-        .populate('list_paint_id');
+      const data = await this.categoryModal.findById(id).populate({
+        path: 'list_paint_id',
+        options: { sort: { createdAt: -1 } },
+      });
 
       return { status: HttpStatus.OK, data };
     } catch (error) {
