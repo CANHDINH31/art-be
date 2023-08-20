@@ -6,6 +6,7 @@ import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
 import { ListUpdateCategoryDto } from './dto/list-update-category.dto';
 import { Model } from 'mongoose';
 import { ListToggleCategoryDto } from './dto/list-toggle-category.dto copy';
+import { AddToCategoryDto } from './dto/add-to-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -107,31 +108,23 @@ export class CategoriesService {
     }
   }
 
-  async addToCategory(listUpdateCategoryDto: ListToggleCategoryDto) {
+  async addToCategory(addToCategoryDto: AddToCategoryDto) {
     try {
       await Promise.all(
-        listUpdateCategoryDto.listCategories?.map(async (category) => {
+        addToCategoryDto?.list_category_id?.map(async (id) => {
           try {
-            const foundCategory = await this.categoryModal.findById(
-              category._id,
-            );
-
-            category?.list_paint_id?.forEach((id) => {
+            const foundCategory = await this.categoryModal.findById(id);
+            addToCategoryDto?.list_paint_id?.forEach((id) => {
               if (!foundCategory.list_paint_id.includes(id)) {
                 foundCategory.list_paint_id.push(id);
               }
             });
-
-            await this.categoryModal.findByIdAndUpdate(
-              category._id,
-              foundCategory,
-            );
+            await this.categoryModal.findByIdAndUpdate(id, foundCategory);
           } catch (error) {
             throw error;
           }
         }),
       );
-
       return {
         status: HttpStatus.CREATED,
         messgae: 'add to categories successfully',

@@ -12,6 +12,7 @@ import { ListCreateCategoryDto } from './dto/list-create-category.dto';
 import { ListDeleteCategoryDto } from './dto/list-delete-category.dto';
 import { ListUpdateCategoryDto } from './dto/list-update-category.dto';
 import { ListToggleCategoryDto } from './dto/list-toggle-category.dto copy';
+import { AddToCategoryDto } from './dto/add-to-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -38,8 +39,8 @@ export class CategoriesController {
   }
 
   @Patch('add-to-category')
-  addToCategory(@Body() listUpdateCategoryDto: ListToggleCategoryDto) {
-    return this.categoriesService.addToCategory(listUpdateCategoryDto);
+  addToCategory(@Body() addToCategoryDto: AddToCategoryDto) {
+    return this.categoriesService.addToCategory(addToCategoryDto);
   }
 
   @Patch('remove-to-category')
