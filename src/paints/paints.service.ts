@@ -79,8 +79,8 @@ export class PaintsService {
             const { _id, total_score, account_users_rate, ...newPaint } = paint;
             await this.paintModal.findByIdAndUpdate(_id, {
               $inc: {
-                total_score: total_score,
-                account_users_rate: account_users_rate,
+                total_score: total_score || 0,
+                account_users_rate: account_users_rate || 0,
               },
               ...newPaint,
             });
