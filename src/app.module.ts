@@ -13,9 +13,10 @@ import { PaintsModule } from './paints/paints.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
-import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
+import { MailerModule } from '@nest-modules/mailer';
 import { RateModule } from './rate/rate.module';
 import { CommentsModule } from './comments/comments.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -40,6 +41,17 @@ import { CommentsModule } from './comments/comments.module';
           from: `"Tranh tường miền Bắc" <${configService.get('MAIL_FROM')}>`,
         },
       }),
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get('REDIS_PORT'),
+          password: configService.get('REDIS_PASSWORD'),
+        },
+      }),
+      inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
