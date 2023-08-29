@@ -171,7 +171,7 @@ export class AuthService {
       },
     );
 
-    return { access_token: accessTokenNew, refresh_token: refreshTokenNew };
+    return { accessToken: accessTokenNew, refreshToken: refreshTokenNew };
   }
 
   async verifyToken(token: string, method: string) {
