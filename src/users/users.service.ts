@@ -77,4 +77,57 @@ export class UsersService {
       };
     } catch (error) {}
   }
+
+  async list(
+    page = 1,
+    pageSize = 10,
+    searchText = '',
+    limit: number,
+    provider = '',
+    role = '',
+  ) {
+    try {
+      const skip = Number(pageSize) * (page - 1);
+      const take = Number(limit) || Number(pageSize);
+
+      const query: Partial<{
+        provider: { $regex: string; $options: string };
+        isAdmin: boolean;
+        $or: (
+          | { email: { $regex: string; $options: string }; name?: undefined }
+          | { name: { $regex: string; $options: string }; email?: undefined }
+        )[];
+      }> = {
+        provider: { $regex: provider, $options: 'i' },
+        $or: [
+          { email: { $regex: searchText, $options: 'i' } },
+          { name: { $regex: searchText, $options: 'i' } },
+        ],
+      };
+
+      if (role === 'Admin') {
+        query.isAdmin = true;
+      } else if (role === 'User') {
+        query.isAdmin = false;
+      }
+
+      const data = await this.userModal
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(take);
+
+      const totalItems = await this.userModal.find(query).count();
+      const totalPage = Math.ceil(totalItems / Number(pageSize));
+      return {
+        currentPage: Number(page),
+        totalPage,
+        itemsPerPage: Number(take),
+        totalItems,
+        data,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
 }

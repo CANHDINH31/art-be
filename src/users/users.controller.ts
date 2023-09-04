@@ -12,8 +12,21 @@ export class UsersController {
   }
 
   @Get('/favourite/:id')
-  favourite(@Param('id') id: string, @Req() req) {
+  list(@Param('id') id: string, @Req() req) {
     return this.usersService.favourite(id, req?.user?._id);
+  }
+
+  @Get()
+  index(@Req() req) {
+    const { pageSize, page, searchText, limit, provider, role } = req.query;
+    return this.usersService.list(
+      page,
+      pageSize,
+      searchText,
+      limit,
+      provider,
+      role,
+    );
   }
 
   @Post('change-password')
