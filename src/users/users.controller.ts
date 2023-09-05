@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Req, Param, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ListDeleteUserDto } from './dto/list-delete-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -32,5 +33,10 @@ export class UsersController {
   @Post('change-password')
   changePassword(@Body() payload: { password: string }, @Req() req) {
     return this.usersService.changePassword(payload, req?.user?._id);
+  }
+
+  @Post('delete')
+  remove(@Body() listDeleteUserDto: ListDeleteUserDto) {
+    return this.usersService.remove(listDeleteUserDto);
   }
 }

@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { ConditionUserDto } from './dto/condition-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { ListDeleteUserDto } from './dto/list-delete-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -128,6 +129,20 @@ export class UsersService {
       };
     } catch (err) {
       throw err;
+    }
+  }
+
+  async remove(listDeleteUserDto: ListDeleteUserDto) {
+    try {
+      await this.userModal.deleteMany({
+        _id: { $in: listDeleteUserDto.listIdDelete },
+      });
+      return {
+        status: HttpStatus.OK,
+        message: 'Delete users successfully',
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }
