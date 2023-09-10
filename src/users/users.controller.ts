@@ -7,6 +7,7 @@ import {
   Get,
   UseInterceptors,
   UploadedFile,
+  Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,6 +24,16 @@ export class UsersController {
     return this.usersService.createByAdmin(file, body.data);
   }
 
+  @Patch('/update-by-admin/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  updateByAdmin(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body,
+    @Param('id') id: string,
+  ) {
+    return this.usersService.updateByAdmin(file, body.data, id);
+  }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -31,6 +42,11 @@ export class UsersController {
   @Get('/favourite/:id')
   list(@Param('id') id: string, @Req() req) {
     return this.usersService.favourite(id, req?.user?._id);
+  }
+
+  @Get('/:id')
+  findById(@Param('id') id: string) {
+    return this.usersService.findById(id);
   }
 
   @Get()

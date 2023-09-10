@@ -26,6 +26,15 @@ export class UsersService {
     }
   }
 
+  async findById(id: string) {
+    try {
+      const user = await this.find({ _id: id });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async createByAdmin(file: Express.Multer.File, data) {
     try {
       let image;
@@ -56,6 +65,33 @@ export class UsersService {
       return {
         status: HttpStatus.BAD_REQUEST,
         message: 'Email đã tồn tại',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateByAdmin(file: Express.Multer.File, data, id: string) {
+    try {
+      let image;
+      if (file) {
+        image = await this.driveService.uploadFile(file);
+      }
+      const convertData = JSON.parse(data);
+      const password =
+        convertData.password && (await bcrypt.hash(convertData.password, 10));
+
+      await this.update({
+        _id: id,
+        name: convertData.name,
+        email: convertData.email,
+        isAdmin: convertData.role == 'Admin',
+        ...(image && { image }),
+        ...(password && { password }),
+      });
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Cập nhật tài khoản thành công',
       };
     } catch (error) {
       throw error;
