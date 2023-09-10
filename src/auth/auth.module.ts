@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { HttpModule } from '@nestjs/axios';
 import { BullModule } from '@nestjs/bull';
 import { SendMailConsumer } from './auth.consumer';
+import { DriveService } from 'src/drive/drive.service';
+import * as bcrypt from 'bcrypt';
 
 @Module({
   imports: [
@@ -18,6 +20,12 @@ import { SendMailConsumer } from './auth.consumer';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UsersService, JwtService, SendMailConsumer],
+  providers: [
+    AuthService,
+    UsersService,
+    JwtService,
+    SendMailConsumer,
+    DriveService,
+  ],
 })
 export class AuthModule {}

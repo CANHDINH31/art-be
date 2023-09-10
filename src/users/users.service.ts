@@ -7,10 +7,14 @@ import { ConditionUserDto } from './dto/condition-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ListDeleteUserDto } from './dto/list-delete-user.dto';
+import { DriveService } from 'src/drive/drive.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModal: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModal: Model<User>,
+    private driveService: DriveService,
+  ) {}
   async find(conditionUserDto: ConditionUserDto) {
     try {
       const user = await this.userModal
@@ -21,6 +25,43 @@ export class UsersService {
       throw error;
     }
   }
+
+  async createByAdmin(file: Express.Multer.File, data) {
+    try {
+      let image;
+      if (file) {
+        image = await this.driveService.uploadFile(file);
+      }
+
+      const convertData = JSON.parse(data);
+      const existUser = await this.find({
+        email: convertData.email,
+        provider: 'WEB',
+      });
+
+      if (!existUser) {
+        const password = await bcrypt.hash(convertData.password, 10);
+        await this.create({
+          name: convertData.name,
+          email: convertData.email,
+          isAdmin: convertData.role == 'Admin',
+          image,
+          password,
+        });
+        return {
+          status: HttpStatus.CREATED,
+          message: 'Đăng kí tài khoản thành công',
+        };
+      }
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Email đã tồn tại',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(createUserDto: CreateUserDto) {
     try {
       return await this.userModal.create(createUserDto);

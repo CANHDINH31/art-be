@@ -1,11 +1,27 @@
-import { Controller, Post, Body, Req, Param, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Param,
+  Get,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListDeleteUserDto } from './dto/list-delete-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Post('/create-by-admin')
+  @UseInterceptors(FileInterceptor('file'))
+  createByAdmin(@UploadedFile() file: Express.Multer.File, @Body() body) {
+    return this.usersService.createByAdmin(file, body.data);
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {

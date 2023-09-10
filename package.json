@@ -41,11 +41,13 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "fastify": "^4.21.0",
+    "googleapis": "^126.0.1",
     "mongoose": "^7.0.5",
     "nestjs-command": "^3.1.4",
     "nodemailer": "^6.9.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "stream": "^0.0.2",
     "tslib": "^2.6.0",
     "yargs": "^17.7.2"
   },
