@@ -22,27 +22,32 @@ export class DriveService {
   }
 
   async uploadFile(file: Express.Multer.File, fileName?: string) {
-    const driver = this.getDrive();
-    const bufferStreamImg = new stream.PassThrough();
-    bufferStreamImg.end(file.buffer);
+    try {
+      const driver = this.getDrive();
+      const bufferStreamImg = new stream.PassThrough();
+      bufferStreamImg.end(file.buffer);
 
-    const folderId = await this.getFolderIdByName(
-      this.configService.get('DRIVE_FOLDER_UPLOAD'),
-    );
+      const folderId = await this.getFolderIdByName(
+        this.configService.get('DRIVE_FOLDER_UPLOAD'),
+      );
 
-    if (folderId) {
-      const data = await driver.files.create({
-        media: {
-          mimeType: file.mimetype,
-          body: bufferStreamImg,
-        },
-        requestBody: {
-          name: fileName || file.originalname,
-          parents: [folderId],
-        },
-      });
-      await this.setPublicFile(data.data.id);
-      return data.data.id;
+      if (folderId) {
+        const data = await driver.files.create({
+          media: {
+            mimeType: file.mimetype,
+            body: bufferStreamImg,
+          },
+          requestBody: {
+            name: fileName || file.originalname,
+            parents: [folderId],
+          },
+        });
+        await this.setPublicFile(data.data.id);
+        return data.data.id;
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 
