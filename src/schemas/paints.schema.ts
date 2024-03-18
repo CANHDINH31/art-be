@@ -19,6 +19,9 @@ export class Paint {
 
   @Prop({ default: 0 })
   views: number;
+
+  @Prop({ default: 0 })
+  price: number;
 }
 
 export const PaintSchema = SchemaFactory.createForClass(Paint);
