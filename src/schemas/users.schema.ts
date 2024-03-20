@@ -17,6 +17,15 @@ export class User {
   @Prop()
   image: string;
 
+  @Prop()
+  age: number;
+
+  @Prop({ default: '1' })
+  sex: string;
+
+  @Prop()
+  address: string;
+
   @Prop({ default: 'WEB' })
   provider: string;
 

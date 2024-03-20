@@ -13,4 +13,7 @@ export class CreatePaintDto {
   @IsNumber()
   @IsOptional()
   account_users_rate: number;
+  @IsNumber()
+  @IsOptional()
+  price?: number;
 }

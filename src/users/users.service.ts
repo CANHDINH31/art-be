@@ -81,17 +81,22 @@ export class UsersService {
       const password =
         convertData.password && (await bcrypt.hash(convertData.password, 10));
 
-      await this.update({
+      const newUser = await this.update({
         _id: id,
         name: convertData.name,
         email: convertData.email,
-        isAdmin: convertData.role == 'Admin',
+        ...(convertData?.role && { isAdmin: convertData.role == 'Admin' }),
         ...(image && { image }),
+        ...(convertData?.age && { age: convertData?.age }),
+        ...(convertData?.address && { address: convertData?.address }),
+        ...(convertData?.sex && { sex: convertData?.sex }),
         ...(password && { password }),
       });
+
       return {
         status: HttpStatus.CREATED,
         message: 'Cập nhật tài khoản thành công',
+        data: newUser,
       };
     } catch (error) {
       throw error;
