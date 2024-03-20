@@ -76,6 +76,7 @@ export class AppModule implements NestModule {
         { path: 'comments/(*)', method: RequestMethod.PUT },
         { path: 'comments/(*)', method: RequestMethod.DELETE },
         { path: 'users/favourite/(*)', method: RequestMethod.GET },
+        { path: 'users/add-to-cart', method: RequestMethod.POST },
         { path: 'auth/me', method: RequestMethod.GET },
         { path: 'users/change-password', method: RequestMethod.POST },
       );

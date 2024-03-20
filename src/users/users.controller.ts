@@ -46,7 +46,7 @@ export class UsersController {
   }
 
   @Post('/add-to-cart')
-  addToCart(@Req() req, @Body() addToCartDto: AddToCartDto) {
+  addToCart(@Body() addToCartDto: AddToCartDto, @Req() req) {
     return this.usersService.addToCart(req?.user?._id, addToCartDto);
   }
 
