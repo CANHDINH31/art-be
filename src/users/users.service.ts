@@ -1,8 +1,9 @@
+import { AddToCartDto } from './dto/add-to-cart.dto';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/schemas/users.schema';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { ConditionUserDto } from './dto/condition-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -151,6 +152,33 @@ export class UsersService {
         }
       } else {
         user.favourite = [id];
+      }
+
+      await user.save();
+      return {
+        status: HttpStatus.OK,
+        data: user,
+      };
+    } catch (error) {}
+  }
+
+  async addToCart(userId: string, addToCartDto: AddToCartDto) {
+    try {
+      console.log(userId, 'userId');
+      const user = await this.userModal.findOne({ _id: userId });
+
+      const existingPaintIndex = user?.cart?.findIndex(
+        (cartItem) => cartItem.paint.toString() === addToCartDto.paint,
+      );
+
+      if (existingPaintIndex !== -1) {
+        user.cart[existingPaintIndex].amount += addToCartDto.amount;
+      } else {
+        user.cart.push({
+          paint:
+            addToCartDto.paint as unknown as mongoose.Schema.Types.ObjectId,
+          amount: addToCartDto.amount,
+        });
       }
 
       await user.save();

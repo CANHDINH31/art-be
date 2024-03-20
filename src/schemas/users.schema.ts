@@ -34,6 +34,11 @@ export class User {
 
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Paint' })
   favourite: string[];
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Paint' }],
+  })
+  cart: { paint: mongoose.Schema.Types.ObjectId; amount: number }[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

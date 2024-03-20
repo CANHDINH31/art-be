@@ -13,6 +13,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListDeleteUserDto } from './dto/list-delete-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AddToCartDto } from './dto/add-to-cart.dto';
 
 @Controller('users')
 export class UsersController {
@@ -40,8 +41,13 @@ export class UsersController {
   }
 
   @Get('/favourite/:id')
-  list(@Param('id') id: string, @Req() req) {
+  favourite(@Param('id') id: string, @Req() req) {
     return this.usersService.favourite(id, req?.user?._id);
+  }
+
+  @Post('/add-to-cart')
+  addToCart(@Req() req, @Body() addToCartDto: AddToCartDto) {
+    return this.usersService.addToCart(req?.user?._id, addToCartDto);
   }
 
   @Get('/:id')
