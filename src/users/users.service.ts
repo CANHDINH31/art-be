@@ -20,7 +20,8 @@ export class UsersService {
     try {
       const user = await this.userModal
         .findOne({ ...conditionUserDto })
-        .populate('favourite');
+        .populate('favourite')
+        .populate('cart.paint');
       return user;
     } catch (error) {
       throw error;
