@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ListDeleteUserDto } from './dto/list-delete-user.dto';
 import { DriveService } from 'src/drive/drive.service';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Injectable()
 export class UsersService {
@@ -184,6 +185,21 @@ export class UsersService {
       }
 
       await this.userModal.findByIdAndUpdate(user._id, { cart });
+      return {
+        status: HttpStatus.OK,
+        data: user,
+      };
+    } catch (error) {}
+  }
+
+  async updateCart(userId: string, updateCartDto: UpdateCartDto) {
+    try {
+      const user = await this.userModal.findOne({ _id: userId });
+
+      await this.userModal.findByIdAndUpdate(user._id, {
+        cart: updateCartDto.listCart,
+      });
+
       return {
         status: HttpStatus.OK,
         data: user,

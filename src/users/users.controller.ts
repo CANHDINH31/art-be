@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ListDeleteUserDto } from './dto/list-delete-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AddToCartDto } from './dto/add-to-cart.dto';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Controller('users')
 export class UsersController {
@@ -48,6 +49,11 @@ export class UsersController {
   @Post('/add-to-cart')
   addToCart(@Body() addToCartDto: AddToCartDto, @Req() req) {
     return this.usersService.addToCart(req?.user?._id, addToCartDto);
+  }
+
+  @Post('/update-cart')
+  updateCart(@Body() updateCartDto: UpdateCartDto, @Req() req) {
+    return this.usersService.updateCart(req?.user?._id, updateCartDto);
   }
 
   @Get('/:id')
