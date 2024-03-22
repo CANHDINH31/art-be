@@ -17,6 +17,7 @@ import { MailerModule } from '@nest-modules/mailer';
 import { RateModule } from './rate/rate.module';
 import { CommentsModule } from './comments/comments.module';
 import { BullModule } from '@nestjs/bull';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { BullModule } from '@nestjs/bull';
     UsersModule,
     RateModule,
     CommentsModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [JwtService],
