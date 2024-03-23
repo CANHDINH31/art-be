@@ -28,18 +28,31 @@ export class OrdersService {
     }
   }
 
-  async findAll(pageSize = 10, page = 1, searchText = '', limit: number) {
+  async findAll(
+    pageSize = 10,
+    page = 1,
+    searchText = '',
+    limit: number,
+    userId: string,
+  ) {
     try {
       const skip = Number(pageSize) * (page - 1);
       const take = limit ? Number(limit) : Number(pageSize);
-      const query = {
-        $or: [
-          { name: { $regex: searchText, $options: 'i' } },
-          { phone: { $regex: searchText, $options: 'i' } },
-          { address: { $regex: searchText, $options: 'i' } },
-        ],
-      };
+      const conditions: any = [
+        {
+          $or: [
+            { name: { $regex: searchText, $options: 'i' } },
+            { phone: { $regex: searchText, $options: 'i' } },
+            { address: { $regex: searchText, $options: 'i' } },
+          ],
+        },
+      ];
 
+      if (userId) {
+        conditions.push({ user: userId });
+      }
+
+      const query = { $and: conditions };
       const data = await this.orderModal
         .find(query)
         .sort({ createdAt: -1 })

@@ -23,8 +23,14 @@ export class OrdersController {
 
   @Get()
   findAll(@Req() req) {
-    const { pageSize, page, searchText, limit } = req.query;
-    return this.ordersService.findAll(pageSize, page, searchText, limit);
+    const { pageSize, page, searchText, limit, userId } = req.query;
+    return this.ordersService.findAll(
+      pageSize,
+      page,
+      searchText,
+      limit,
+      userId,
+    );
   }
 
   @Get(':id')
