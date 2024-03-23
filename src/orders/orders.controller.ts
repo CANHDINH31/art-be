@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -21,8 +22,9 @@ export class OrdersController {
   }
 
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  findAll(@Req() req) {
+    const { pageSize, page, searchText, limit } = req.query;
+    return this.ordersService.findAll(pageSize, page, searchText, limit);
   }
 
   @Get(':id')

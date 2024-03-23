@@ -28,13 +28,36 @@ export class OrdersService {
     }
   }
 
-  async findAll() {
+  async findAll(pageSize = 10, page = 1, searchText = '', limit: number) {
     try {
-      return await this.orderModal
-        .find({})
+      const skip = Number(pageSize) * (page - 1);
+      const take = limit ? Number(limit) : Number(pageSize);
+      const query = {
+        $or: [
+          { name: { $regex: searchText, $options: 'i' } },
+          { phone: { $regex: searchText, $options: 'i' } },
+          { address: { $regex: searchText, $options: 'i' } },
+        ],
+      };
+
+      const data = await this.orderModal
+        .find(query)
         .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(take)
         .populate('user')
         .populate('cart.paint');
+
+      const totalItems = await this.orderModal.find(query).count();
+      const totalPage = Math.ceil(totalItems / Number(pageSize));
+
+      return {
+        currentPage: Number(page),
+        totalPage,
+        itemsPerPage: Number(take),
+        totalItems,
+        data,
+      };
     } catch (error) {
       throw error;
     }
