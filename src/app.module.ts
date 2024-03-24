@@ -18,6 +18,7 @@ import { RateModule } from './rate/rate.module';
 import { CommentsModule } from './comments/comments.module';
 import { BullModule } from '@nestjs/bull';
 import { OrdersModule } from './orders/orders.module';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { OrdersModule } from './orders/orders.module';
     RateModule,
     CommentsModule,
     OrdersModule,
+    ProfilesModule,
   ],
   controllers: [],
   providers: [JwtService],
