@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { AiTweetDto } from './dto/ai-tweet.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('tweets')
 export class TweetsController {
@@ -22,8 +25,12 @@ export class TweetsController {
   }
 
   @Post()
-  create(@Body() createTweetDto: CreateTweetDto) {
-    return this.tweetsService.create(createTweetDto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createTweetDto: CreateTweetDto,
+  ) {
+    return this.tweetsService.create(file, createTweetDto);
   }
 
   @Get()
