@@ -37,7 +37,7 @@ export class TweetsService {
     }
   }
 
-  async create(file: Express.Multer.File, createTweetDto: CreateTweetDto) {
+  async create(file: Express.Multer.File, createTweetDto) {
     try {
       let image;
       if (file) {

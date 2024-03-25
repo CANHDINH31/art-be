@@ -10,7 +10,6 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
-import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { AiTweetDto } from './dto/ai-tweet.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -26,10 +25,7 @@ export class TweetsController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() createTweetDto: CreateTweetDto,
-  ) {
+  create(@UploadedFile() file: Express.Multer.File, @Body() createTweetDto) {
     return this.tweetsService.create(file, createTweetDto);
   }
 
