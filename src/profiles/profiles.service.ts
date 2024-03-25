@@ -5,7 +5,6 @@ import { Profile } from 'src/schemas/profiles.schema';
 import { Model } from 'mongoose';
 import { TwitterApi } from 'twitter-api-v2';
 import { SyncProfileDto } from './dto/sync-profile.dto';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 @Injectable()
 export class ProfilesService {
@@ -15,15 +14,6 @@ export class ProfilesService {
 
   async sync(syncProfileDto: SyncProfileDto) {
     try {
-      const configuration = new GoogleGenerativeAI(
-        'AIzaSyCaA0mWYRZDg7XPkQgzvISpqf5HK3grqhI',
-      );
-      const modelId = 'gemini-pro';
-      const model = configuration.getGenerativeModel({ model: modelId });
-
-      const result = await model.generateContent('Một số hình ảnh về việt');
-      return result;
-
       const client = new TwitterApi(syncProfileDto);
       const data = await client.v2.me();
       const existProfile = await this.profileModal.findOne({
@@ -46,8 +36,12 @@ export class ProfilesService {
     }
   }
 
-  findAll() {
-    return `This action returns all profiles`;
+  async findAll() {
+    try {
+      return await this.profileModal.find({});
+    } catch (error) {
+      throw error;
+    }
   }
 
   findOne(id: number) {
