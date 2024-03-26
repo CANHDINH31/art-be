@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTweetDto } from './dto/create-tweet.dto';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { AiTweetDto } from './dto/ai-tweet.dto';
 import { ConfigService } from '@nestjs/config';
@@ -8,8 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Profile } from 'src/schemas/profiles.schema';
 import { Model } from 'mongoose';
 import { TwitterApi } from 'twitter-api-v2';
-import { DownloadService } from 'src/download/download.service';
-import { DriveService } from 'src/drive/drive.service';
+import fs from 'fs';
 
 @Injectable()
 export class TweetsService {
@@ -17,8 +15,6 @@ export class TweetsService {
   private readonly configuration;
   constructor(
     private configService: ConfigService,
-    private downloadService: DownloadService,
-    private driveService: DriveService,
     @InjectModel(Profile.name) private profileModal: Model<Profile>,
   ) {
     this.configuration = new GoogleGenerativeAI(
@@ -39,42 +35,32 @@ export class TweetsService {
 
   async create(file: Express.Multer.File, createTweetDto) {
     try {
-      let image;
-      if (file) {
-        image = await this.driveService.uploadFile(file);
-      }
+      const convertData = JSON.parse(createTweetDto.data);
+      const profile = await this.profileModal.findOne({
+        _id: convertData.profileId,
+      });
+      const client = new TwitterApi({
+        appKey: profile.appKey,
+        appSecret: profile.appSecret,
+        accessSecret: profile.accessSecret,
+        accessToken: profile.accessToken,
+      });
 
-      console.log(image);
+      const mediaId = await client.v1.uploadMedia(file.buffer, { type: 'png' });
 
-      // const profile = await this.profileModal.findOne({
-      //   _id: createTweetDto.profileId,
-      // });
+      await client.v2.tweet({
+        media: {
+          media_ids: [mediaId],
+        },
+        text: convertData.content,
+      });
 
-      // const client = new TwitterApi({
-      //   appKey: profile.appKey,
-      //   appSecret: profile.appSecret,
-      //   accessSecret: profile.accessSecret,
-      //   accessToken: profile.accessToken,
-      // });
-
-      // await this.downloadService.download(
-      //   'https://firebasestorage.googleapis.com/v0/b/lms-education-8bb9c.appspot.com/o/term%2Fterm1.png-1675341314225?alt=media&token=e2c679d6-da7e-43a5-85c2-1fcbd39a9493',
-      //   'image.png',
-      //   async function () {
-      //     try {
-      //       const mediaId = await client.v1.uploadMedia('./image.png');
-      //       await client.v2.tweet({
-      //         text: createTweetDto.content,
-      //         media: {
-      //           media_ids: [mediaId],
-      //         },
-      //       });
-      //     } catch (e) {
-      //       throw e;
-      //     }
-      //   },
-      // );
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Đăng bài thành công',
+      };
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }
