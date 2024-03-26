@@ -20,6 +20,7 @@ import { BullModule } from '@nestjs/bull';
 import { OrdersModule } from './orders/orders.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { TweetsModule } from './tweets/tweets.module';
+import { TargetsModule } from './targets/targets.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { TweetsModule } from './tweets/tweets.module';
     OrdersModule,
     ProfilesModule,
     TweetsModule,
+    TargetsModule,
   ],
   controllers: [],
   providers: [JwtService],
