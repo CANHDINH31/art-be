@@ -44,8 +44,12 @@ export class ProfilesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  async findOne(id: string) {
+    try {
+      return await this.profileModal.findById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   update(id: number, updateProfileDto: UpdateProfileDto) {
