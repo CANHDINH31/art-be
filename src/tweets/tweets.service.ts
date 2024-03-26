@@ -46,7 +46,9 @@ export class TweetsService {
         accessToken: profile.accessToken,
       });
 
-      const mediaId = await client.v1.uploadMedia(file.buffer, { type: 'png' });
+      const mediaId = await client.v1.uploadMedia(file.buffer, {
+        type: file.mimetype,
+      });
 
       await client.v2.tweet({
         media: {
