@@ -6,13 +6,22 @@ export type TargetDocument = HydratedDocument<Target>;
 @Schema({ timestamps: true })
 export class Target {
   @Prop()
-  keywords: string;
+  keywords: string[];
 
   @Prop()
-  hashtags: string;
+  hashtags: string[];
 
   @Prop()
-  total_action: number;
+  views: number;
+
+  @Prop()
+  likes: number;
+
+  @Prop()
+  shares: number;
+
+  @Prop()
+  comments: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Profile' })
   profile: string;
