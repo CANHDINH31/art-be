@@ -22,19 +22,48 @@ export class TargetsService {
     }
   }
 
-  findAll() {
-    return `This action returns all targets`;
+  async findAll(profileId: string, status: string) {
+    try {
+      const query = {
+        ...(profileId && { profile: profileId }),
+        ...(status && { status: Number(status) }),
+      };
+      return await this.targetModal.find(query).populate('profile');
+    } catch (error) {
+      throw error;
+    }
   }
 
   findOne(id: number) {
     return `This action returns a #${id} target`;
   }
 
-  update(id: number, updateTargetDto: UpdateTargetDto) {
-    return `This action updates a #${id} target`;
+  async update(id: string, updateTargetDto: UpdateTargetDto) {
+    try {
+      const data = await this.targetModal.findByIdAndUpdate(
+        id,
+        updateTargetDto,
+        { new: true },
+      );
+      return {
+        status: HttpStatus.CREATED,
+        messgae: 'Update target successfully',
+        data,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} target`;
+  async remove(id: string) {
+    try {
+      await this.targetModal.findByIdAndUpdate(id, { status: 0 });
+      return {
+        status: HttpStatus.CREATED,
+        messgae: 'Xóa target thành công',
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

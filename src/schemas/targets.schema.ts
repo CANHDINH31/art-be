@@ -25,6 +25,9 @@ export class Target {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Profile' })
   profile: string;
+
+  @Prop({ default: 1 })
+  status: number;
 }
 
 export const TargetSchema = SchemaFactory.createForClass(Target);

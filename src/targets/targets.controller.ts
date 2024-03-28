@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { TargetsService } from './targets.service';
 import { CreateTargetDto } from './dto/create-target.dto';
@@ -21,8 +22,9 @@ export class TargetsController {
   }
 
   @Get()
-  findAll() {
-    return this.targetsService.findAll();
+  findAll(@Req() req) {
+    const { profileId, status } = req.query;
+    return this.targetsService.findAll(profileId, status);
   }
 
   @Get(':id')
@@ -32,11 +34,11 @@ export class TargetsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTargetDto: UpdateTargetDto) {
-    return this.targetsService.update(+id, updateTargetDto);
+    return this.targetsService.update(id, updateTargetDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.targetsService.remove(+id);
+    return this.targetsService.remove(id);
   }
 }
