@@ -7,7 +7,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Profile } from 'src/schemas/profiles.schema';
 import { Model } from 'mongoose';
 import { TwitterApi } from 'twitter-api-v2';
-import fs from 'fs';
 
 @Injectable()
 export class TweetsService {
