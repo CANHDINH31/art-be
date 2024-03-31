@@ -15,6 +15,24 @@ export class Profile {
   username: string;
 
   @Prop()
+  avatar: string;
+
+  @Prop()
+  description: string;
+
+  @Prop()
+  location: string;
+
+  @Prop()
+  joinDate: string;
+
+  @Prop()
+  follower: number;
+
+  @Prop()
+  following: number;
+
+  @Prop()
   appKey: string;
 
   @Prop()
