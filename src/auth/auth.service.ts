@@ -90,6 +90,7 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     try {
+      await this.sendMail.empty();
       const user = await this.userService.find({ email, provider: 'WEB' });
       if (!user)
         throw new BadRequestException({

@@ -6,6 +6,9 @@ export type TargetDocument = HydratedDocument<Target>;
 @Schema({ timestamps: true })
 export class Target {
   @Prop()
+  urls: string[];
+
+  @Prop()
   keywords: string[];
 
   @Prop()

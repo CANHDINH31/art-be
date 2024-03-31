@@ -15,6 +15,7 @@ export class OrdersService {
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     try {
+      await this.sendMail.empty();
       const order = await this.orderModal.create(createOrderDto);
       const payload = await this.orderModal
         .findOne({ _id: order._id })

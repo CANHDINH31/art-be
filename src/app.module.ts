@@ -35,10 +35,16 @@ import { TargetsModule } from './targets/targets.module';
       useFactory: async (configService: ConfigService) => ({
         transport: {
           host: configService.get('MAIL_HOST'),
-          secure: false,
+          secure: true,
+          logger: true,
+          debugger: true,
+          sercureConnection: false,
           auth: {
             user: configService.get('MAIL_USER'),
             pass: configService.get('MAIL_PASSWORD'),
+          },
+          tls: {
+            rejectUnAuthorized: true,
           },
         },
         defaults: {

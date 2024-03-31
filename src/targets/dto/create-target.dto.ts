@@ -9,6 +9,10 @@ import {
 export class CreateTargetDto {
   @IsArray()
   @IsOptional()
+  urls: string[];
+
+  @IsArray()
+  @IsOptional()
   keywords: string[];
 
   @IsArray()
