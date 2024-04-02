@@ -26,10 +26,10 @@ export class UpdateByUsernameDto {
   joinDate?: string;
 
   @IsOptional()
-  @IsNumber()
-  follower?: number;
+  @IsString()
+  follower?: string;
 
   @IsOptional()
-  @IsNumber()
-  following?: number;
+  @IsString()
+  following?: string;
 }

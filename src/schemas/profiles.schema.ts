@@ -27,10 +27,10 @@ export class Profile {
   joinDate: string;
 
   @Prop()
-  follower: number;
+  follower: string;
 
   @Prop()
-  following: number;
+  following: string;
 
   @Prop()
   appKey: string;
