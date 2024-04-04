@@ -127,8 +127,12 @@ export class TweetsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tweet`;
+  async findOne(id: string) {
+    try {
+      return await this.tweetModal.findById(id).populate('target');
+    } catch (error) {
+      throw error;
+    }
   }
 
   update(id: number, updateTweetDto: UpdateTweetDto) {
