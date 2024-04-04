@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
@@ -35,8 +36,9 @@ export class TweetsController {
   }
 
   @Get()
-  findAll() {
-    return this.tweetsService.findAll();
+  findAll(@Req() req) {
+    const { pageSize, page, searchText, limit } = req.query;
+    return this.tweetsService.findAll(pageSize, page, searchText, limit);
   }
 
   @Get(':id')

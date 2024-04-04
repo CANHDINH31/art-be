@@ -13,6 +13,9 @@ export class TopComment {
   username: string;
 
   @Prop()
+  name: string;
+
+  @Prop()
   avatar: string;
 
   @Prop()
@@ -57,6 +60,9 @@ export class Tweet {
 
   @Prop()
   username: string;
+
+  @Prop()
+  name: string;
 
   @Prop()
   avatar: string;
