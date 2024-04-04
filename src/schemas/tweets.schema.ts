@@ -95,7 +95,10 @@ export class Tweet {
   status: number;
 
   @Prop({ type: TopCommentSchema })
-  user: TopComment;
+  topComment: TopComment;
+
+  @Prop()
+  lastCrawl: Date;
 }
 
 export const TweetSchema = SchemaFactory.createForClass(Tweet);

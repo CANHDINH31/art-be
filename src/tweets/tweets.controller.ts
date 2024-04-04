@@ -23,6 +23,11 @@ export class TweetsController {
     return this.tweetsService.ai(aiTweetDto);
   }
 
+  @Post('save')
+  sync(@Body() body) {
+    return this.tweetsService.sync(body);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   create(@UploadedFile() file: Express.Multer.File, @Body() createTweetDto) {

@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Profile } from 'src/schemas/profiles.schema';
 import { Model } from 'mongoose';
 import { TwitterApi } from 'twitter-api-v2';
+import { Tweet } from 'src/schemas/tweets.schema';
 
 @Injectable()
 export class TweetsService {
@@ -15,6 +16,7 @@ export class TweetsService {
   constructor(
     private configService: ConfigService,
     @InjectModel(Profile.name) private profileModal: Model<Profile>,
+    @InjectModel(Tweet.name) private tweetModal: Model<Tweet>,
   ) {
     this.configuration = new GoogleGenerativeAI(
       this.configService.get('AI_KEY'),
@@ -23,6 +25,38 @@ export class TweetsService {
       model: this.configService.get('AI_MODEl'),
     });
   }
+
+  async sync(body) {
+    try {
+      for (const tweet of body.data) {
+        const existTweet = await this.tweetModal.findOne({
+          tweetId: tweet.tweetId,
+        });
+        if (existTweet) {
+          await this.tweetModal.findByIdAndUpdate(existTweet._id, {
+            ...tweet,
+            target: body.target,
+            lastCrawl: body.lastCrawl,
+          });
+        } else {
+          await this.tweetModal.create({
+            ...tweet,
+            target: body.target,
+            lastCrawl: body.lastCrawl,
+          });
+        }
+      }
+
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Lưu tweet thành công',
+      };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   async ai(aiTweetDto: AiTweetDto) {
     try {
       return await this.model.generateContent(aiTweetDto.prompt);
