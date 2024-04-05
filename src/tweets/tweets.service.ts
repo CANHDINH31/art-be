@@ -105,7 +105,21 @@ export class TweetsService {
       const skip = Number(pageSize) * (page - 1);
       const take = limit ? Number(limit) : Number(pageSize);
 
-      const query = {};
+      const conditions: any = [
+        {
+          $or: [
+            { username: { $regex: searchText, $options: 'i' } },
+            { name: { $regex: searchText, $options: 'i' } },
+            { content: { $regex: searchText, $options: 'i' } },
+            { likes: Number(searchText) },
+            { replies: Number(searchText) },
+            { retweets: Number(searchText) },
+            { views: { $regex: searchText, $options: 'i' } },
+          ],
+        },
+      ];
+
+      const query = { $and: conditions };
       const data = await this.tweetModal
         .find(query)
         .sort({ createdAt: -1 })
