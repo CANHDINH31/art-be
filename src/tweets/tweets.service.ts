@@ -22,7 +22,7 @@ export class TweetsService {
       this.configService.get('AI_KEY'),
     );
     this.model = this.configuration.getGenerativeModel({
-      model: this.configService.get('AI_MODEl'),
+      model: 'gemini-pro',
     });
   }
 
