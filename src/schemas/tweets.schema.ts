@@ -99,6 +99,7 @@ export class Tweet {
 
   @Prop({ default: 1 })
   status: number;
+  // 1:Cần reply , 0: Đã reply
 
   @Prop({ type: TopCommentSchema })
   topComment: TopComment;

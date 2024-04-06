@@ -8,6 +8,7 @@ import { Profile } from 'src/schemas/profiles.schema';
 import { Model } from 'mongoose';
 import { TwitterApi } from 'twitter-api-v2';
 import { Tweet } from 'src/schemas/tweets.schema';
+import { Reply } from 'src/schemas/replies.schema';
 
 @Injectable()
 export class TweetsService {
@@ -17,6 +18,7 @@ export class TweetsService {
     private configService: ConfigService,
     @InjectModel(Profile.name) private profileModal: Model<Profile>,
     @InjectModel(Tweet.name) private tweetModal: Model<Tweet>,
+    @InjectModel(Reply.name) private replyModal: Model<Reply>,
   ) {
     this.configuration = new GoogleGenerativeAI(
       this.configService.get('AI_KEY'),
@@ -100,7 +102,58 @@ export class TweetsService {
     }
   }
 
-  async findAll(pageSize = 10, page = 1, searchText = '', limit: number) {
+  async autoReply() {
+    try {
+      const countDocument = await this.tweetModal.countDocuments({ status: 1 });
+      const PAGE_SIZE = 20;
+      const TOTAL_PAGE = Math.ceil(Number(countDocument) / PAGE_SIZE);
+
+      for (let i = 1; i <= TOTAL_PAGE; i++) {
+        const res = await this.findAll(PAGE_SIZE, i, '', PAGE_SIZE, '1');
+        const listTweet: any = res?.data;
+
+        for (const tweet of listTweet) {
+          try {
+            const resComment = await this.model.generateContent(
+              `Comment on the content of the following article no more than 40 characters including the icon in the most appropriate and best way. The content of the article is: ${tweet?.content}`,
+            );
+            const comment =
+              resComment?.response?.candidates?.[0]?.content?.parts?.[0]?.text;
+            const profile = tweet.target.profile;
+            const client = new TwitterApi({
+              appKey: profile.appKey,
+              appSecret: profile.appSecret,
+              accessSecret: profile.accessSecret,
+              accessToken: profile.accessToken,
+            });
+
+            const reply = await client.v2.reply(comment, tweet.tweetId);
+
+            await this.replyModal.create({
+              tweetId: reply.data.id,
+              tweet: tweet._id,
+              comment,
+            });
+
+            await this.tweetModal.findByIdAndUpdate(tweet._id, { status: 0 });
+          } catch (error) {
+            continue;
+          }
+        }
+      }
+      return 'finnish reply';
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async findAll(
+    pageSize = 10,
+    page = 1,
+    searchText = '',
+    limit: number,
+    status: string,
+  ) {
     try {
       const skip = Number(pageSize) * (page - 1);
       const take = limit ? Number(limit) : Number(pageSize);
@@ -119,12 +172,21 @@ export class TweetsService {
         },
       ];
 
+      if (status) {
+        conditions.push({ status: Number(status) });
+      }
       const query = { $and: conditions };
       const data = await this.tweetModal
         .find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(take);
+        .limit(take)
+        .populate({
+          path: 'target',
+          populate: {
+            path: 'profile',
+          },
+        });
 
       const totalItems = await this.tweetModal.find(query).count();
       const totalPage = Math.ceil(totalItems / Number(pageSize));

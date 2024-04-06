@@ -35,10 +35,21 @@ export class TweetsController {
     return this.tweetsService.create(file, createTweetDto);
   }
 
+  @Get('/auto-reply')
+  autoReply() {
+    return this.tweetsService.autoReply();
+  }
+
   @Get()
   findAll(@Req() req) {
-    const { pageSize, page, searchText, limit } = req.query;
-    return this.tweetsService.findAll(pageSize, page, searchText, limit);
+    const { pageSize, page, searchText, limit, status } = req.query;
+    return this.tweetsService.findAll(
+      pageSize,
+      page,
+      searchText,
+      limit,
+      status,
+    );
   }
 
   @Get(':id')
