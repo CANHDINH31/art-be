@@ -21,6 +21,7 @@ import { OrdersModule } from './orders/orders.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { TweetsModule } from './tweets/tweets.module';
 import { TargetsModule } from './targets/targets.module';
+import { RepliesModule } from './replies/replies.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { TargetsModule } from './targets/targets.module';
     ProfilesModule,
     TweetsModule,
     TargetsModule,
+    RepliesModule,
   ],
   controllers: [],
   providers: [JwtService],

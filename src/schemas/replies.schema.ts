@@ -13,6 +13,18 @@ export class Reply {
 
   @Prop()
   tweetId: string;
+
+  @Prop({ default: 0 })
+  replies: number;
+
+  @Prop({ default: 0 })
+  retweets: number;
+
+  @Prop({ default: 0 })
+  likes: number;
+
+  @Prop({ default: '0' })
+  views: string;
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);
