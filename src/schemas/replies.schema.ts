@@ -23,8 +23,8 @@ export class Reply {
   @Prop({ default: 0 })
   likes: number;
 
-  @Prop({ default: '0' })
-  views: string;
+  @Prop({ default: 0 })
+  views: number;
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);

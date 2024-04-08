@@ -28,7 +28,7 @@ export class TopComment {
   likes: number;
 
   @Prop()
-  views: string;
+  views: number;
 
   @Prop()
   postedTime: string;
@@ -77,7 +77,7 @@ export class Tweet {
   likes: number;
 
   @Prop()
-  views: string;
+  views: number;
 
   @Prop()
   postedTime: string;

@@ -167,7 +167,7 @@ export class TweetsService {
             { likes: Number(searchText) },
             { replies: Number(searchText) },
             { retweets: Number(searchText) },
-            { views: { $regex: searchText, $options: 'i' } },
+            { views: Number(searchText) },
           ],
         },
       ];
