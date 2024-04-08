@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateReplyDto } from './dto/create-reply.dto';
 import { UpdateReplyDto } from './dto/update-reply.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,6 +8,30 @@ import { Model } from 'mongoose';
 @Injectable()
 export class RepliesService {
   constructor(@InjectModel(Reply.name) private replyModal: Model<Reply>) {}
+
+  async sync(body) {
+    try {
+      for (const reply of body.data) {
+        const existReply = await this.replyModal.findOne({
+          tweetId: reply.tweetId,
+        });
+        const reCrawl = existReply?.reCrawl ? existReply?.reCrawl + 1 : 1;
+        await this.replyModal.findByIdAndUpdate(existReply._id, {
+          ...reply,
+          reCrawl,
+        });
+      }
+
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Lưu reply thành công',
+      };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   create(createReplyDto: CreateReplyDto) {
     return 'This action adds a new reply';
   }

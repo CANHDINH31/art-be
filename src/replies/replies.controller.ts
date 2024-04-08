@@ -21,6 +21,11 @@ export class RepliesController {
     return this.repliesService.create(createReplyDto);
   }
 
+  @Post('save')
+  sync(@Body() body) {
+    return this.repliesService.sync(body);
+  }
+
   @Get()
   findAll(@Req() req) {
     const { pageSize, page, limit, status } = req.query;
