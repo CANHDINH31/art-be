@@ -44,7 +44,7 @@ export class RepliesService {
 
       if (status == '0') {
         query = {
-          age: {
+          reCrawl: {
             $lt: 3,
           },
         };
