@@ -126,17 +126,15 @@ export class TweetsService {
               accessSecret: profile.accessSecret,
               accessToken: profile.accessToken,
             });
-
             const reply = await client.v2.reply(comment, tweet.tweetId);
-
             await this.replyModal.create({
               tweetId: reply.data.id,
               tweet: tweet._id,
               comment,
             });
-
             await this.tweetModal.findByIdAndUpdate(tweet._id, { status: 0 });
           } catch (error) {
+            console.log(error);
             continue;
           }
         }

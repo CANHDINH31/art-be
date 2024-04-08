@@ -12,8 +12,48 @@ export class RepliesService {
     return 'This action adds a new reply';
   }
 
-  findAll() {
-    return `This action returns all replies`;
+  async findAll(pageSize = 10, page = 1, limit: number, status: string) {
+    try {
+      const skip = Number(pageSize) * (page - 1);
+      const take = limit ? Number(limit) : Number(pageSize);
+      let query = {};
+
+      if (status == '0') {
+        query = {
+          age: {
+            $lt: 3,
+          },
+        };
+      }
+
+      const data = await this.replyModal
+        .find(query)
+        .populate({
+          path: 'tweet',
+          populate: {
+            path: 'target',
+            populate: {
+              path: 'profile',
+            },
+          },
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(take);
+
+      const totalItems = await this.replyModal.find(query).count();
+      const totalPage = Math.ceil(totalItems / Number(pageSize));
+
+      return {
+        currentPage: Number(page),
+        totalPage,
+        itemsPerPage: Number(take),
+        totalItems,
+        data,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findByTweet(id: string) {

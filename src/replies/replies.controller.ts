@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { RepliesService } from './replies.service';
 import { CreateReplyDto } from './dto/create-reply.dto';
@@ -21,8 +22,9 @@ export class RepliesController {
   }
 
   @Get()
-  findAll() {
-    return this.repliesService.findAll();
+  findAll(@Req() req) {
+    const { pageSize, page, limit, status } = req.query;
+    return this.repliesService.findAll(pageSize, page, limit, status);
   }
 
   @Get('/find-by-tweet/:id')
