@@ -14,18 +14,6 @@ export class Target {
   @Prop()
   hashtags: string[];
 
-  @Prop()
-  views: number;
-
-  @Prop()
-  likes: number;
-
-  @Prop()
-  shares: number;
-
-  @Prop()
-  comments: number;
-
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Profile' })
   profile: string;
 
