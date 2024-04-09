@@ -31,6 +31,9 @@ export class Target {
 
   @Prop({ default: 1 })
   status: number;
+
+  @Prop()
+  lastCrawl: Date;
 }
 
 export const TargetSchema = SchemaFactory.createForClass(Target);

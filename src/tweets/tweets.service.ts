@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 import { TwitterApi } from 'twitter-api-v2';
 import { Tweet } from 'src/schemas/tweets.schema';
 import { Reply } from 'src/schemas/replies.schema';
+import { Target } from 'src/schemas/targets.schema';
 
 @Injectable()
 export class TweetsService {
@@ -19,6 +20,7 @@ export class TweetsService {
     @InjectModel(Profile.name) private profileModal: Model<Profile>,
     @InjectModel(Tweet.name) private tweetModal: Model<Tweet>,
     @InjectModel(Reply.name) private replyModal: Model<Reply>,
+    @InjectModel(Target.name) private targetModal: Model<Target>,
   ) {
     this.configuration = new GoogleGenerativeAI(
       this.configService.get('AI_KEY'),
@@ -48,6 +50,10 @@ export class TweetsService {
           });
         }
       }
+
+      await this.targetModal.findByIdAndUpdate(body.target, {
+        lastCrawl: body.lastCrawl,
+      });
 
       return {
         status: HttpStatus.CREATED,

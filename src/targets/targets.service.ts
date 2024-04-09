@@ -28,7 +28,10 @@ export class TargetsService {
         ...(profileId && { profile: profileId }),
         ...(status && { status: Number(status) }),
       };
-      return await this.targetModal.find(query).populate('profile');
+      return await this.targetModal
+        .find(query)
+        .populate('profile')
+        .sort({ lastCrawl: 1 });
     } catch (error) {
       throw error;
     }
