@@ -10,6 +10,7 @@ import { TwitterApi } from 'twitter-api-v2';
 import { Tweet } from 'src/schemas/tweets.schema';
 import { Reply } from 'src/schemas/replies.schema';
 import { Target } from 'src/schemas/targets.schema';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TweetsService {
@@ -108,6 +109,7 @@ export class TweetsService {
     }
   }
 
+  @Cron('0 20-23 * * *')
   async autoReply() {
     try {
       const countDocument = await this.tweetModal.countDocuments({ status: 1 });
