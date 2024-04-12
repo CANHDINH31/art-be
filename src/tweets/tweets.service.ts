@@ -184,7 +184,7 @@ export class TweetsService {
       const query = { $and: conditions };
       const data = await this.tweetModal
         .find(query)
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
         .skip(skip)
         .limit(take)
         .populate({
