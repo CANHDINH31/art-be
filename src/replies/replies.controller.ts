@@ -28,8 +28,8 @@ export class RepliesController {
 
   @Get()
   findAll(@Req() req) {
-    const { pageSize, page, limit, status } = req.query;
-    return this.repliesService.findAll(pageSize, page, limit, status);
+    const { pageSize, page, limit } = req.query;
+    return this.repliesService.findAll(pageSize, page, limit);
   }
 
   @Get('/find-by-tweet/:id')

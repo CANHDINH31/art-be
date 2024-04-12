@@ -15,10 +15,10 @@ export class RepliesService {
         const existReply = await this.replyModal.findOne({
           tweetId: reply.tweetId,
         });
-        const reCrawl = existReply?.reCrawl ? existReply?.reCrawl + 1 : 1;
+
         await this.replyModal.findByIdAndUpdate(existReply._id, {
           ...reply,
-          reCrawl,
+          lastCrawl: new Date(),
         });
       }
 
@@ -36,22 +36,13 @@ export class RepliesService {
     return 'This action adds a new reply';
   }
 
-  async findAll(pageSize = 10, page = 1, limit: number, status: string) {
+  async findAll(pageSize = 10, page = 1, limit: number) {
     try {
       const skip = Number(pageSize) * (page - 1);
       const take = limit ? Number(limit) : Number(pageSize);
-      let query = {};
-
-      if (status == '0') {
-        query = {
-          reCrawl: {
-            $lt: 3,
-          },
-        };
-      }
 
       const data = await this.replyModal
-        .find(query)
+        .find({})
         .populate({
           path: 'tweet',
           populate: {
@@ -61,11 +52,11 @@ export class RepliesService {
             },
           },
         })
-        .sort({ createdAt: -1 })
+        .sort({ lastCrawl: 1 })
         .skip(skip)
         .limit(take);
 
-      const totalItems = await this.replyModal.find(query).count();
+      const totalItems = await this.replyModal.find({}).count();
       const totalPage = Math.ceil(totalItems / Number(pageSize));
 
       return {

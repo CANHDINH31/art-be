@@ -26,8 +26,8 @@ export class Reply {
   @Prop({ default: 0 })
   views: number;
 
-  @Prop({ default: 0 })
-  reCrawl: number;
+  @Prop()
+  lastCrawl: Date;
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);
