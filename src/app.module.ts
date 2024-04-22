@@ -36,16 +36,13 @@ import { RepliesModule } from './replies/replies.module';
       useFactory: async (configService: ConfigService) => ({
         transport: {
           host: configService.get('MAIL_HOST'),
-          secure: true,
-          logger: true,
-          debugger: true,
-          sercureConnection: false,
+          secure: false,
           auth: {
             user: configService.get('MAIL_USER'),
             pass: configService.get('MAIL_PASSWORD'),
           },
           tls: {
-            rejectUnAuthorized: true,
+            rejectUnAuthorized: false,
           },
         },
         defaults: {
