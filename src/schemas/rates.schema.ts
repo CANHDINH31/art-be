@@ -6,6 +6,9 @@ export type RateDocument = HydratedDocument<Rate>;
 @Schema({ timestamps: true })
 export class Rate {
   @Prop()
+  visit: string;
+
+  @Prop()
   value: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

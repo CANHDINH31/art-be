@@ -1,6 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SyncRateDto {
+  @IsOptional()
+  @IsString()
+  visit?: string;
   @IsNotEmpty()
   @IsNumber()
   value: number;
