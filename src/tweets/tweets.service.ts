@@ -123,10 +123,12 @@ export class TweetsService {
         for (const tweet of listTweet) {
           try {
             const resComment = await this.model.generateContent(
-              `Comment on the content of the following article no more than 40 characters including the icon in the most appropriate and best way. The content of the article is: ${tweet?.content}`,
+              `Comment on the content of the following article no more than 40 words including the icon in the most appropriate and best way. The content of the article is: ${tweet?.content}.`,
             );
             const comment =
-              resComment?.response?.candidates?.[0]?.content?.parts?.[0]?.text;
+              resComment?.response?.candidates?.[0]?.content?.parts?.[0]?.text +
+              ` Visit link:  https://tranhtuongmienbac.com/?visit=${tweet.id}`;
+
             const profile = tweet.target.profile;
             const client = new TwitterApi({
               appKey: profile.appKey,
