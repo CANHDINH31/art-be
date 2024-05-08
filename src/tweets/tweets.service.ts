@@ -121,6 +121,7 @@ export class TweetsService {
         const listTweet: any = res?.data;
 
         for (const tweet of listTweet) {
+          const tweetId = tweet.id;
           try {
             const resComment = await this.model.generateContent(
               `Comment on the content of the following article no more than 40 words including the icon in the most appropriate and best way. The content of the article is: ${tweet?.content}.`,
@@ -143,7 +144,10 @@ export class TweetsService {
               comment,
             });
             await this.tweetModal.findByIdAndUpdate(tweet._id, { status: 0 });
-          } catch (error) {
+          } catch (error: any) {
+            if (error?.data?.status === 403) {
+              await this.tweetModal.findByIdAndDelete(tweetId);
+            }
             console.log(error);
             continue;
           }
