@@ -128,7 +128,7 @@ export class TweetsService {
             );
             const comment =
               resComment?.response?.candidates?.[0]?.content?.parts?.[0]?.text +
-              ` Visit link:  https://tranhtuongmienbac.com/?visit=${tweet.id}`;
+              `\n Visit link:  https://tranhtuongmienbac.com/?visit=${tweet.id}`;
 
             const profile = tweet.target.profile;
             const client = new TwitterApi({
