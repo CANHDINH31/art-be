@@ -17,8 +17,12 @@ export class AccessService {
     }
   }
 
-  findAll() {
-    return `This action returns all access`;
+  async findAll() {
+    try {
+      return await this.accessModal.find({});
+    } catch (error) {
+      throw error;
+    }
   }
 
   findOne(id: number) {
