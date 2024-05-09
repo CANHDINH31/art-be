@@ -116,6 +116,8 @@ export class TweetsService {
       const PAGE_SIZE = 20;
       const TOTAL_PAGE = Math.ceil(Number(countDocument) / PAGE_SIZE);
 
+      console.log(countDocument, 'countDocument');
+
       for (let i = 1; i <= TOTAL_PAGE; i++) {
         const res = await this.findAll(PAGE_SIZE, i, '', PAGE_SIZE, '1');
         const listTweet: any = res?.data;
