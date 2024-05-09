@@ -109,7 +109,7 @@ export class TweetsService {
     }
   }
 
-  @Cron('0 20-23 * * *')
+  // @Cron('0 20-23 * * *')
   async autoReply() {
     try {
       const countDocument = await this.tweetModal.countDocuments({ status: 1 });
@@ -150,7 +150,11 @@ export class TweetsService {
             if (error?.data?.status === 403) {
               await this.tweetModal.findByIdAndDelete(tweetId);
             }
-            console.log(error);
+
+            if (error?.data?.status !== 429) {
+              console.log(error);
+            }
+
             continue;
           }
         }
@@ -192,7 +196,7 @@ export class TweetsService {
       const query = { $and: conditions };
       const data = await this.tweetModal
         .find(query)
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(take)
         .populate({
