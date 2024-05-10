@@ -11,6 +11,11 @@ import { Tweet } from 'src/schemas/tweets.schema';
 import { Reply } from 'src/schemas/replies.schema';
 import { Target } from 'src/schemas/targets.schema';
 import { Cron } from '@nestjs/schedule';
+import { Access } from 'src/schemas/accesses.schema';
+import { Comment } from 'src/schemas/comments.schema';
+import { Order } from 'src/schemas/orders.schema';
+import { Rate } from 'src/schemas/rates.schema';
+import { User } from 'src/schemas/users.schema';
 
 @Injectable()
 export class TweetsService {
@@ -22,6 +27,11 @@ export class TweetsService {
     @InjectModel(Tweet.name) private tweetModal: Model<Tweet>,
     @InjectModel(Reply.name) private replyModal: Model<Reply>,
     @InjectModel(Target.name) private targetModal: Model<Target>,
+    @InjectModel(Access.name) private accessModal: Model<Access>,
+    @InjectModel(Comment.name) private commentModal: Model<Comment>,
+    @InjectModel(Order.name) private orderModal: Model<Order>,
+    @InjectModel(Rate.name) private rateModal: Model<Rate>,
+    @InjectModel(User.name) private userModal: Model<User>,
   ) {
     this.configuration = new GoogleGenerativeAI(
       this.configService.get('AI_KEY'),
@@ -214,6 +224,84 @@ export class TweetsService {
         totalPage,
         itemsPerPage: Number(take),
         totalItems,
+        data,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async exportCsv() {
+    try {
+      const listResult = [];
+      const listTweet = await this.tweetModal
+        .find({ status: 0 })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: 'target',
+          populate: {
+            path: 'profile',
+          },
+        });
+
+      for (const tweet of listTweet) {
+        const reply = await this.replyModal.findOne({ tweet: tweet._id });
+        const webAccess = await this.accessModal.countDocuments({
+          visit: tweet._id.toString(),
+        });
+        const webComment = await this.commentModal.countDocuments({
+          visit: tweet._id.toString(),
+        });
+
+        const webOrder = await this.orderModal.countDocuments({
+          visit: tweet._id.toString(),
+        });
+
+        const webRate = await this.rateModal.countDocuments({
+          visit: tweet._id.toString(),
+        });
+
+        const webUser = await this.userModal.countDocuments({
+          visit: tweet._id.toString(),
+        });
+
+        listResult.push({
+          ...tweet.toObject(),
+          reply,
+          webAccess,
+          webComment,
+          webOrder,
+          webRate,
+          webUser,
+        });
+      }
+
+      const data = listResult?.map((tweet: any) => ({
+        tweetId: tweet?._id,
+        tweetReply: tweet?.replies,
+        tweetRetweet: tweet?.retweets,
+        tweetLike: tweet?.likes,
+        tweetView: tweet?.views,
+        topReply: tweet?.topComment?.replies,
+        topRetweet: tweet?.topComment?.retweets,
+        topLike: tweet?.topComment?.likes,
+        topView: tweet?.topComment?.views,
+        replyReply: tweet?.reply?.replies,
+        replyRetweet: tweet?.reply?.retweets,
+        replyLike: tweet?.reply?.likes,
+        replyView: tweet?.reply?.views,
+        webAccess: tweet?.webAccess,
+        webComment: tweet?.webComment,
+        webOrder: tweet?.webOrder,
+        webRate: tweet?.webRate,
+        webUser: tweet?.webUser,
+        tweetFollower: tweet?.follower?.split(' ')?.[0],
+        tweetFollowing: tweet?.following?.split(' ')?.[0],
+        userFollower: tweet?.target?.profile?.follower?.split(' ')?.[0],
+        userFollowing: tweet?.target?.profile?.following?.split(' ')?.[0],
+      }));
+
+      return {
         data,
       };
     } catch (error) {

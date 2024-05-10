@@ -40,6 +40,11 @@ export class TweetsController {
     return this.tweetsService.autoReply();
   }
 
+  @Get('/export-csv')
+  exportCsv() {
+    return this.tweetsService.exportCsv();
+  }
+
   @Get()
   findAll(@Req() req) {
     const { pageSize, page, searchText, limit, status } = req.query;

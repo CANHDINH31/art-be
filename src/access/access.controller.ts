@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { AccessService } from './access.service';
 import { CreateAccessDto } from './dto/create-access.dto';
@@ -21,8 +22,9 @@ export class AccessController {
   }
 
   @Get()
-  findAll() {
-    return this.accessService.findAll();
+  findAll(@Req() req) {
+    const { visit } = req.query;
+    return this.accessService.findAll(visit);
   }
 
   @Get(':id')

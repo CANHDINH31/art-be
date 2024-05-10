@@ -17,9 +17,12 @@ export class AccessService {
     }
   }
 
-  async findAll() {
+  async findAll(visit?: string) {
     try {
-      return await this.accessModal.find({});
+      const query = {
+        ...(visit && { visit: visit }),
+      };
+      return await this.accessModal.find(query).sort({ createdAt: -1 });
     } catch (error) {
       throw error;
     }
