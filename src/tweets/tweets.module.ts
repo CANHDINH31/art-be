@@ -11,9 +11,11 @@ import { Comment, CommentSchema } from 'src/schemas/comments.schema';
 import { Order, OrderSchema } from 'src/schemas/orders.schema';
 import { Rate, RateSchema } from 'src/schemas/rates.schema';
 import { User, UserSchema } from 'src/schemas/users.schema';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     MongooseModule.forFeature([
       { name: Profile.name, schema: ProfileSchema },
       { name: Tweet.name, schema: TweetSchema },

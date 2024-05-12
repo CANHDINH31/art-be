@@ -16,11 +16,13 @@ import { Comment } from 'src/schemas/comments.schema';
 import { Order } from 'src/schemas/orders.schema';
 import { Rate } from 'src/schemas/rates.schema';
 import { User } from 'src/schemas/users.schema';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class TweetsService {
   private readonly model;
   private readonly configuration;
+  private readonly MIN_SCORE = 50;
   constructor(
     private configService: ConfigService,
     @InjectModel(Profile.name) private profileModal: Model<Profile>,
@@ -32,6 +34,7 @@ export class TweetsService {
     @InjectModel(Order.name) private orderModal: Model<Order>,
     @InjectModel(Rate.name) private rateModal: Model<Rate>,
     @InjectModel(User.name) private userModal: Model<User>,
+    private readonly httpService: HttpService,
   ) {
     this.configuration = new GoogleGenerativeAI(
       this.configService.get('AI_KEY'),
@@ -133,7 +136,14 @@ export class TweetsService {
         const listTweet: any = res?.data;
 
         for (const tweet of listTweet) {
+          const score = await this.getScore(tweet);
           const tweetId = tweet.id;
+
+          if (score < this.MIN_SCORE) {
+            await this.tweetModal.findByIdAndUpdate(tweet._id, { status: 0 });
+            continue;
+          }
+
           try {
             const resComment = await this.model.generateContent(
               `Comment on the content of the following article no more than 40 words including the icon in the most appropriate and best way. The content of the article is: ${tweet?.content}.`,
@@ -141,7 +151,6 @@ export class TweetsService {
             const comment =
               resComment?.response?.candidates?.[0]?.content?.parts?.[0]?.text +
               `\n Visit link:  https://tranhtuongmienbac.com/?visit=${tweet.id}`;
-
             const profile = tweet.target.profile;
             const client = new TwitterApi({
               appKey: profile.appKey,
@@ -160,11 +169,9 @@ export class TweetsService {
             if (error?.data?.status === 403) {
               await this.tweetModal.findByIdAndDelete(tweetId);
             }
-
             if (error?.data?.status !== 429) {
               console.log(error);
             }
-
             continue;
           }
         }
@@ -350,5 +357,45 @@ export class TweetsService {
 
   remove(id: number) {
     return `This action removes a #${id} tweet`;
+  }
+
+  async getScore(tweet: any) {
+    try {
+      const data = [
+        tweet?.replies,
+        tweet?.retweets,
+        tweet?.likes,
+        tweet?.views,
+        tweet?.topComment?.replies,
+        tweet?.topComment?.retweets,
+        tweet?.topComment?.likes,
+        tweet?.topComment?.views,
+        tweet?.follower?.split(' ')?.[0]
+          ? this.convertShortNumberToFull(tweet?.follower?.split(' ')?.[0])
+          : 0,
+        tweet?.following?.split(' ')?.[0]
+          ? this.convertShortNumberToFull(tweet?.following?.split(' ')?.[0])
+          : 0,
+        tweet?.target?.profile?.follower?.split(' ')?.[0]
+          ? this.convertShortNumberToFull(
+              tweet?.target?.profile?.follower?.split(' ')?.[0],
+            )
+          : 0,
+        tweet?.target?.profile?.following?.split(' ')?.[0]
+          ? this.convertShortNumberToFull(
+              tweet?.target?.profile?.follower?.split(' ')?.[0],
+            )
+          : 0,
+      ];
+
+      const res = await this.httpService.axiosRef.post(
+        this.configService.get('AI_DOMAIN') + 'api/prediction/',
+        { data },
+      );
+
+      return res.data?.data;
+    } catch (error) {
+      throw error;
+    }
   }
 }
