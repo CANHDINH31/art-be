@@ -122,6 +122,37 @@ export class TweetsService {
     }
   }
 
+  async checkErrorReply() {
+    try {
+      const countDocument = await this.tweetModal.countDocuments({ status: 0 });
+      const PAGE_SIZE = 20;
+      const TOTAL_PAGE = Math.ceil(Number(countDocument) / PAGE_SIZE);
+
+      for (let i = 1; i <= TOTAL_PAGE; i++) {
+        const res = await this.findAll(PAGE_SIZE, i, '', PAGE_SIZE, '0');
+        const listTweet: any = res?.data;
+
+        for (const tweet of listTweet) {
+          const tweetId = tweet._id;
+          try {
+            const reply = await this.replyModal.findOne({
+              tweetId,
+            });
+
+            if (!reply) {
+              await this.tweetModal.findByIdAndUpdate(tweetId, { status: 1 });
+            }
+          } catch (error: any) {
+            await this.tweetModal.findByIdAndUpdate(tweetId, { status: 1 });
+          }
+        }
+      }
+      return 'finnish reply';
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // @Cron('0 20-23 * * *')
   async autoReply() {
     try {

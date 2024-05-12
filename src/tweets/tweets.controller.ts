@@ -40,6 +40,11 @@ export class TweetsController {
     return this.tweetsService.autoReply();
   }
 
+  @Get('/check-error-reply')
+  checkErrorReply() {
+    return this.tweetsService.checkErrorReply();
+  }
+
   @Get('/export-csv')
   exportCsv(@Req() req) {
     const { pageSize, page, searchText, limit, status } = req.query;
