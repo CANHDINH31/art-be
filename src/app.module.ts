@@ -23,6 +23,7 @@ import { TweetsModule } from './tweets/tweets.module';
 import { TargetsModule } from './targets/targets.module';
 import { RepliesModule } from './replies/replies.module';
 import { AccessModule } from './access/access.module';
+import { SatisticalModule } from './satistical/satistical.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { AccessModule } from './access/access.module';
     TargetsModule,
     RepliesModule,
     AccessModule,
+    SatisticalModule,
   ],
   controllers: [],
   providers: [JwtService],
