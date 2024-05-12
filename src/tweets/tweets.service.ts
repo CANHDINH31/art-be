@@ -295,8 +295,14 @@ export class TweetsService {
         webOrder: tweet?.webOrder,
         webRate: tweet?.webRate,
         webUser: tweet?.webUser,
-        tweetFollower: tweet?.follower?.split(' ')?.[0],
-        tweetFollowing: tweet?.following?.split(' ')?.[0],
+        tweetFollower: this.convertShortNumberToFull(
+          tweet?.follower?.split(' ')?.[0],
+        ),
+        tweetFollowing: this.convertShortNumberToFull(
+          tweet?.following?.split(' ')?.[0],
+        ),
+        tweetFollower1: tweet?.follower?.split(' ')?.[0],
+        tweetFollowing1: tweet?.following?.split(' ')?.[0],
         userFollower: tweet?.target?.profile?.follower?.split(' ')?.[0],
         userFollowing: tweet?.target?.profile?.following?.split(' ')?.[0],
       }));
@@ -307,6 +313,24 @@ export class TweetsService {
     } catch (error) {
       throw error;
     }
+  }
+
+  private convertShortNumberToFull(number: string) {
+    const multiplier = {
+      K: 1000,
+      M: 1000000,
+      B: 1000000000,
+    };
+
+    const sanitizedNumber = number.replace(/,/g, '');
+    const numericPart = parseFloat(sanitizedNumber);
+    const suffix = sanitizedNumber.slice(-1).toUpperCase();
+
+    if (multiplier.hasOwnProperty(suffix)) {
+      return numericPart * multiplier[suffix];
+    }
+
+    return numericPart;
   }
 
   async findOne(id: string) {
