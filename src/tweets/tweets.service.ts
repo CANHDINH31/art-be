@@ -231,11 +231,16 @@ export class TweetsService {
     }
   }
 
-  async exportCsv() {
+  async exportCsv(pageSize = 100, page = 1, limit: number) {
     try {
+      const skip = Number(pageSize) * (page - 1);
+      const take = limit ? Number(limit) : Number(pageSize);
+
       const listResult = [];
       const listTweet = await this.tweetModal
         .find({ status: 0 })
+        .skip(skip)
+        .limit(take)
         .sort({ createdAt: -1 })
         .populate({
           path: 'target',
@@ -295,14 +300,12 @@ export class TweetsService {
         webOrder: tweet?.webOrder,
         webRate: tweet?.webRate,
         webUser: tweet?.webUser,
-        tweetFollower: this.convertShortNumberToFull(
-          tweet?.follower?.split(' ')?.[0],
-        ),
-        tweetFollowing: this.convertShortNumberToFull(
-          tweet?.following?.split(' ')?.[0],
-        ),
-        tweetFollower1: tweet?.follower?.split(' ')?.[0],
-        tweetFollowing1: tweet?.following?.split(' ')?.[0],
+        tweetFollower: tweet?.follower?.split(' ')?.[0]
+          ? this.convertShortNumberToFull(tweet?.follower?.split(' ')?.[0])
+          : 0,
+        tweetFollowing: tweet?.following?.split(' ')?.[0]
+          ? this.convertShortNumberToFull(tweet?.following?.split(' ')?.[0])
+          : 0,
         userFollower: tweet?.target?.profile?.follower?.split(' ')?.[0],
         userFollowing: tweet?.target?.profile?.following?.split(' ')?.[0],
       }));
@@ -322,7 +325,7 @@ export class TweetsService {
       B: 1000000000,
     };
 
-    const sanitizedNumber = number.replace(/,/g, '');
+    const sanitizedNumber = number?.replace(/,/g, '');
     const numericPart = parseFloat(sanitizedNumber);
     const suffix = sanitizedNumber.slice(-1).toUpperCase();
 

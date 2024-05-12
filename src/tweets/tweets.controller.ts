@@ -41,8 +41,9 @@ export class TweetsController {
   }
 
   @Get('/export-csv')
-  exportCsv() {
-    return this.tweetsService.exportCsv();
+  exportCsv(@Req() req) {
+    const { pageSize, page, searchText, limit, status } = req.query;
+    return this.tweetsService.exportCsv(pageSize, page, limit);
   }
 
   @Get()
