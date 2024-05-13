@@ -122,25 +122,29 @@ export class TweetsService {
     }
   }
 
-  async checkErrorReply() {
+  async checkErrorReply(status: string) {
     try {
-      const countDocument = await this.tweetModal.countDocuments({ status: 0 });
+      const countDocument = await this.tweetModal.countDocuments({
+        status: Number(status),
+      });
       const PAGE_SIZE = 20;
       const TOTAL_PAGE = Math.ceil(Number(countDocument) / PAGE_SIZE);
 
       for (let i = 1; i <= TOTAL_PAGE; i++) {
-        const res = await this.findAll(PAGE_SIZE, i, '', PAGE_SIZE, '0');
+        const res = await this.findAll(PAGE_SIZE, i, '', PAGE_SIZE, status);
         const listTweet: any = res?.data;
 
         for (const tweet of listTweet) {
           const tweetId = tweet._id;
           try {
             const reply = await this.replyModal.findOne({
-              tweetId,
+              tweet: tweetId,
             });
 
             if (!reply) {
               await this.tweetModal.findByIdAndUpdate(tweetId, { status: 1 });
+            } else {
+              await this.tweetModal.findByIdAndUpdate(tweetId, { status: 0 });
             }
           } catch (error: any) {
             await this.tweetModal.findByIdAndUpdate(tweetId, { status: 1 });
@@ -159,8 +163,7 @@ export class TweetsService {
       const countDocument = await this.tweetModal.countDocuments({ status: 1 });
       const PAGE_SIZE = 20;
       const TOTAL_PAGE = Math.ceil(Number(countDocument) / PAGE_SIZE);
-
-      console.log(countDocument, 'countDocument');
+      const listResult = [];
 
       for (let i = 1; i <= TOTAL_PAGE; i++) {
         const res = await this.findAll(PAGE_SIZE, i, '', PAGE_SIZE, '1');
@@ -168,10 +171,11 @@ export class TweetsService {
 
         for (const tweet of listTweet) {
           const score = await this.getScore(tweet);
-          const tweetId = tweet.id;
+          const tweetId = tweet._id;
 
           if (score < this.MIN_SCORE) {
-            await this.tweetModal.findByIdAndUpdate(tweet._id, { status: 0 });
+            // logic: remove if not enough score
+            // await this.tweetModal.findByIdAndDelete(tweetId);
             continue;
           }
 
@@ -181,7 +185,8 @@ export class TweetsService {
             );
             const comment =
               resComment?.response?.candidates?.[0]?.content?.parts?.[0]?.text +
-              `\n Visit link:  https://tranhtuongmienbac.com/?visit=${tweet.id}`;
+              `\n Visit link:  https://tranhtuongmienbac.com/?visit=${tweetId}`;
+
             const profile = tweet.target.profile;
             const client = new TwitterApi({
               appKey: profile.appKey,
@@ -190,12 +195,13 @@ export class TweetsService {
               accessToken: profile.accessToken,
             });
             const reply = await client.v2.reply(comment, tweet.tweetId);
-            await this.replyModal.create({
+            const replyMongo = await this.replyModal.create({
               tweetId: reply.data.id,
-              tweet: tweet._id,
+              tweet: tweetId,
               comment,
             });
-            await this.tweetModal.findByIdAndUpdate(tweet._id, { status: 0 });
+            await this.tweetModal.findByIdAndUpdate(tweetId, { status: 0 });
+            listResult.push({ tweetId, replyMongo });
           } catch (error: any) {
             if (error?.data?.status === 403) {
               await this.tweetModal.findByIdAndDelete(tweetId);
@@ -207,7 +213,7 @@ export class TweetsService {
           }
         }
       }
-      return 'finnish reply';
+      return listResult;
     } catch (error) {
       console.log(error);
     }
@@ -218,7 +224,7 @@ export class TweetsService {
     page = 1,
     searchText = '',
     limit: number,
-    status: string,
+    status?: string,
   ) {
     try {
       const skip = Number(pageSize) * (page - 1);

@@ -41,13 +41,14 @@ export class TweetsController {
   }
 
   @Get('/check-error-reply')
-  checkErrorReply() {
-    return this.tweetsService.checkErrorReply();
+  checkErrorReply(@Req() req) {
+    const { status } = req.query;
+    return this.tweetsService.checkErrorReply(status);
   }
 
   @Get('/export-csv')
   exportCsv(@Req() req) {
-    const { pageSize, page, searchText, limit, status } = req.query;
+    const { pageSize, page, limit } = req.query;
     return this.tweetsService.exportCsv(pageSize, page, limit);
   }
 

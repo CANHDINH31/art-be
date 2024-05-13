@@ -39,7 +39,7 @@ export class RepliesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.repliesService.findOne(+id);
+    return this.repliesService.findOne(id);
   }
 
   @Patch(':id')

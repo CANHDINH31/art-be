@@ -87,8 +87,20 @@ export class RepliesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} reply`;
+  async findOne(id: string) {
+    try {
+      await this.replyModal.findById(id).populate({
+        path: 'tweet',
+        populate: {
+          path: 'target',
+          populate: {
+            path: 'profile',
+          },
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   update(id: number, updateReplyDto: UpdateReplyDto) {
