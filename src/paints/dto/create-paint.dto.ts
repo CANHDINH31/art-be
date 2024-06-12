@@ -16,4 +16,7 @@ export class CreatePaintDto {
   @IsNumber()
   @IsOptional()
   price?: number;
+  @IsNumber()
+  @IsOptional()
+  stock?: number;
 }

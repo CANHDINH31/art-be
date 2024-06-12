@@ -22,6 +22,9 @@ export class Paint {
 
   @Prop({ default: 0 })
   price: number;
+
+  @Prop({ default: 10 })
+  stock: number;
 }
 
 export const PaintSchema = SchemaFactory.createForClass(Paint);

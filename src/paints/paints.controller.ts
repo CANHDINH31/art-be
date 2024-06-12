@@ -12,6 +12,7 @@ import { PaintsService } from './paints.service';
 import { ListCreatePaintDto } from './dto/list-create-paint.dto';
 import { ListDeletePaintDto } from './dto/list-delete-paint.dto';
 import { ListUpdatePaintDto } from './dto/list-update-paint.dto';
+import { UpdateDetailPaintDto } from './dto/update-detail-paint.dto';
 
 @Controller('paints')
 export class PaintsController {
@@ -36,6 +37,14 @@ export class PaintsController {
   @Put(':id')
   views(@Param('id') id: string) {
     return this.paintsService.views(id);
+  }
+
+  @Patch('/update/:id')
+  updatePaint(
+    @Param('id') id: string,
+    @Body() updateDetailPaintDto: UpdateDetailPaintDto,
+  ) {
+    return this.paintsService.updatePaint(id, updateDetailPaintDto);
   }
 
   @Patch()

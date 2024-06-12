@@ -5,6 +5,8 @@ import { Model } from 'mongoose';
 import { ListCreatePaintDto } from './dto/list-create-paint.dto';
 import { ListDeletePaintDto } from './dto/list-delete-paint.dto';
 import { ListUpdatePaintDto } from './dto/list-update-paint.dto';
+import { UpdatePaintDto } from './dto/update-paint.dto';
+import { UpdateDetailPaintDto } from './dto/update-detail-paint.dto';
 
 @Injectable()
 export class PaintsService {
@@ -93,6 +95,21 @@ export class PaintsService {
         status: HttpStatus.CREATED,
         messgae: 'update paints successfully',
       };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePaint(id: string, updateDetailPaintDto: UpdateDetailPaintDto) {
+    try {
+      const data = await this.paintModal.findByIdAndUpdate(
+        id,
+        updateDetailPaintDto,
+        {
+          new: true,
+        },
+      );
+      return data;
     } catch (error) {
       throw error;
     }
