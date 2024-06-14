@@ -6,15 +6,23 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
+import { Paint } from 'src/schemas/paints.schema';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModal: Model<Order>,
+    @InjectModel(Paint.name) private paintModal: Model<Paint>,
     @InjectQueue('orders') private sendMail: Queue,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     try {
+      const listProduct = createOrderDto.cart;
+      for (const pr of listProduct) {
+        await this.paintModal.findByIdAndUpdate(pr.paint, {
+          $inc: { stock: -Number(pr.amount) },
+        });
+      }
       await this.sendMail.empty();
       const order = await this.orderModal.create(createOrderDto);
       const payload = await this.orderModal
